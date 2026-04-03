@@ -1,3 +1,5 @@
+"use client";
+
 export default function Hero() {
   return (
     <section
@@ -25,6 +27,7 @@ export default function Hero() {
 
           {/* PRIMARY BUTTON */}
           <button
+            onClick={() => document.getElementById("upload-section")?.scrollIntoView({ behavior: "smooth" })}
             className="px-6 py-3 rounded-lg font-medium 
             bg-[#f1f5f9] text-[#030f36]
             hover:bg-[#e2e8f0] 

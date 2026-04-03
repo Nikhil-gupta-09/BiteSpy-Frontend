@@ -250,12 +250,13 @@ export default function SignupPage() {
       <div className="hidden md:flex flex-1 h-full bg-white items-center justify-center">
 
         <Image
-          src="/hero1.png"
-          alt="Hero"
+          src="/Mascot_looping.gif"
+          alt="Signup Mascot"
           width={500}
           height={500}
-          className="object-contain"
+          className="w-full max-w-[500px] h-auto object-contain"
           priority
+          unoptimized
         />
 
       </div>
