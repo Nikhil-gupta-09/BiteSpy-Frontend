@@ -1,13 +1,15 @@
-import React from 'react'
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import ClaimForm from "@/components/ClaimForm";
+import Footer from "@/components/Footer";
 
-const page = () => {
+export default function Home() {
   return (
-    <div>
-      <h1>Hello</h1>
-      <h1>Test Preview</h1>
-      <h2>BiteSpy</h2>
-    </div>
-  )
+    <main>
+      <Navbar />
+      <Hero />
+      <ClaimForm />
+      <Footer />
+    </main>
+  );
 }
-
-export default page
