@@ -1,9 +1,17 @@
+import Image from "next/image";
+import mascot from "../public/logo_mascot.png";
+
 export function Logo() {
   return (
     <div className="flex items-center gap-2 cursor-pointer">
-      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00C6FF] to-[#007BFF] flex items-center justify-center text-white font-bold shadow-md">
-        B
-      </div>
+      <Image 
+        src={mascot} 
+        alt="BiteSpy Mascot" 
+        width={36} 
+        height={36} 
+        className="object-contain drop-shadow-md" 
+        priority
+      />
       <span className="text-white font-semibold text-lg tracking-tight">
         BiteSpy
       </span>

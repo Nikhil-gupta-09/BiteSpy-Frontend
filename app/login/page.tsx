@@ -71,12 +71,13 @@ export default function LoginPage() {
         {/* LEFT IMAGE */}
         <div className="hidden md:flex justify-center items-center">
           <Image
-            src="/hero1.png"
-            alt="Hero"
+            src="/Mascot_looping.gif"
+            alt="Login Mascot"
             width={420}
             height={420}
             className="drop-shadow-2xl object-contain"
             priority
+            unoptimized
           />
         </div>
 
