@@ -3,12 +3,27 @@
 export default function Hero() {
   return (
     <section
-      className="min-h-screen px-16 pt-32 pb-20 
-      grid lg:grid-cols-2 gap-16 items-center text-white"
+      className="relative min-h-screen px-16 pt-32 pb-20 
+      grid lg:grid-cols-2 gap-16 items-center text-white overflow-hidden"
     >
+      {/* BACKGROUND IMAGE & OVERLAY (Faded at the bottom) */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ 
+          maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)", 
+          WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent 100%)" 
+        }}
+      >
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/home_bkg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#4c1d95]/95 via-[#4c1d95]/80 to-transparent mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
 
       {/* LEFT CONTENT */}
-      <div>
+      <div className="z-10 relative">
 
         <h1 className="text-5xl lg:text-6xl font-semibold leading-tight mb-6">
           Expose the truth
@@ -51,13 +66,8 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* RIGHT VISUAL */}
-      <div className="relative flex justify-center">
-
-        <img
-          src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
-          className="rounded-3xl shadow-2xl w-full max-w-md object-cover"
-        />
+      {/* RIGHT VISUAL (Empty for now) */}
+      <div className="relative flex justify-center z-10">
 
       </div>
     </section>

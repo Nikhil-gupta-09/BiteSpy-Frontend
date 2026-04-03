@@ -7,7 +7,7 @@ import { FiArrowRight } from "react-icons/fi";
 export default function Navbar() {
   return (
     <nav
-      className="fixed top-0 left-0 w-full z-50 
+      className="absolute top-0 left-0 w-full z-50 
       border-b border-none
       backdrop-blur-md "
     >
