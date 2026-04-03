@@ -85,7 +85,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-[#020617] via-[#0b3c6f] to-[#007BFF] flex items-center justify-center px-6">
+    <div className="h-screen overflow-hidden 
+    bg-gradient-to-r from-[#020617]/90 via-[#0b3c6f] to-[#007BFF]/90
+    flex items-center justify-center px-6">
 
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
 
@@ -230,7 +232,9 @@ export default function SignupPage() {
             {/* BUTTON */}
             <button
               disabled={loading}
-              className="w-full py-2.5 rounded-md font-medium text-white bg-gradient-to-r from-[#007BFF] to-[#00C6FF] hover:scale-[1.02] active:scale-[0.98] transition"
+              className="w-full py-2.5 rounded-md font-medium text-white 
+              bg-gradient-to-r from-[#007BFF] to-[#00C6FF]
+               hover:scale-[1.02] active:scale-[0.98] transition"
             >
               {loading ? "Creating..." : "Sign up"}
             </button>
