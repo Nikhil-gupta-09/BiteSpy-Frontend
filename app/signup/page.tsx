@@ -92,7 +92,7 @@ export default function SignupPage() {
         {/* LEFT IMAGE */}
         <div className="hidden md:flex justify-center items-center">
           <Image
-            src="/login_mascot.gif"
+            src="/Mascot_looping.gif"
             alt="Login Mascot"
             width={420}
             height={420}
