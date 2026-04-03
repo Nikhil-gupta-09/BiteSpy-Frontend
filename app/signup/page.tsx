@@ -8,7 +8,14 @@ import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase";
 
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { 
+  FiEye, 
+  FiEyeOff, 
+  FiMail, 
+  FiPhone, 
+  FiLock,
+  FiUser
+} from "react-icons/fi";
 
 type Mode = "email" | "phone";
 
@@ -42,7 +49,6 @@ export default function SignupPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔄 phone → email (firebase workaround)
   const normalizePhoneToEmail = (phone: string): string => {
     const cleaned = phone.replace(/\s+/g, "");
     return `${cleaned}@phone.bitespy.com`;
@@ -79,132 +85,164 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-[#020617] via-[#0b3c6f] to-[#007BFF] flex items-center justify-center px-6">
 
-      {/* LEFT IMAGE */}
-      <div className="w-1/2 hidden md:flex items-center justify-center bg-gray-100">
-        <Image src="/hero.png" alt="Hero" width={500} height={500} />
-      </div>
+      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
 
-      {/* RIGHT FORM */}
-      <div className="w-full md:w-1/2 flex items-center justify-center">
-        <div className="w-full max-w-md p-8 border rounded-2xl shadow-md">
+        {/* LEFT IMAGE */}
+        <div className="hidden md:flex justify-center items-center">
+          <Image
+            src="/hero1.png"
+            alt="Hero"
+            width={420}
+            height={420}
+            className="drop-shadow-2xl object-contain"
+            priority
+          />
+        </div>
 
-          <h2 className="text-2xl font-semibold text-center mb-4">
-            Create Account
-          </h2>
+        {/* RIGHT FORM */}
+        <div className="w-full max-w-sm mx-auto">
 
-          {/* SLIDER */}
-          <div className="relative flex bg-gray-200 rounded-lg mb-4 overflow-hidden">
-            <div
-              className={`absolute top-0 left-0 w-1/2 h-full bg-black transition-transform ${
-                mode === "phone" ? "translate-x-full" : ""
-              }`}
-            />
+          {/* HEADING */}
+          <div className="mb-6">
+            <h2 className="text-3xl font-semibold text-white">
+              Create account
+            </h2>
+            <p className="text-blue-200 text-sm mt-1">
+              Join and get started
+            </p>
+          </div>
 
+          {/* TOGGLE */}
+          <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5">
             <button
               type="button"
               onClick={() => setMode("email")}
-              className="w-1/2 py-2 z-10 text-white text-sm font-medium"
+              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+                mode === "email"
+                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  : "text-blue-200 hover:bg-white/10"
+              }`}
             >
+              <FiMail size={16} />
               Email
             </button>
 
             <button
               type="button"
               onClick={() => setMode("phone")}
-              className="w-1/2 py-2 z-10 text-white text-sm font-medium"
+              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+                mode === "phone"
+                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  : "text-blue-200 hover:bg-white/10"
+              }`}
             >
+              <FiPhone size={16} />
               Phone
             </button>
           </div>
 
+          {/* ERROR */}
           {error && (
-            <p className="text-red-500 text-sm text-center mb-3">{error}</p>
+            <div className="mb-4 text-red-400 text-sm bg-red-500/10 border border-red-500/30 p-2 rounded-md">
+              {error}
+            </div>
           )}
 
+          {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* NAME */}
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              value={form.firstName}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg"
-              required
-            />
+            {/* FIRST NAME */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
+                <FiUser />
+              </span>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First name"
+                value={form.firstName}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={form.lastName}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg"
-              required
-            />
+            {/* LAST NAME */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
+                <FiUser />
+              </span>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last name"
+                value={form.lastName}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
             {/* EMAIL / PHONE */}
-            {mode === "email" ? (
-              <input
-                type="email"
-                name="email"
-                placeholder="Email ID"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg"
-                required
-              />
-            ) : (
-              <input
-                type="tel"
-                name="phone"
-                placeholder="+91 9876543210"
-                value={form.phone}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg"
-                required
-              />
-            )}
-
-            {/* PASSWORD WITH EYE */}
             <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
+                {mode === "email" ? <FiMail /> : <FiPhone />}
+              </span>
+
+              <input
+                type={mode === "email" ? "email" : "tel"}
+                name={mode === "email" ? "email" : "phone"}
+                placeholder={mode === "email" ? "Email" : "Phone number"}
+                value={mode === "email" ? form.email : form.phone}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
+                <FiLock />
+              </span>
+
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-lg pr-12"
+                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-300"
               >
-                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
 
+            {/* BUTTON */}
             <button
               disabled={loading}
-              className="w-full bg-black text-white py-3 rounded-lg"
+              className="w-full py-2.5 rounded-md font-medium text-white bg-gradient-to-r from-[#007BFF] to-[#00C6FF] hover:scale-[1.02] active:scale-[0.98] transition"
             >
-              {loading ? "Creating..." : "Sign Up"}
+              {loading ? "Creating..." : "Sign up"}
             </button>
-          </form>
 
-          <p className="text-center mt-4 text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="text-blue-600">
-              Login
+            {/* LOGIN */}
+            <Link
+              href="/login"
+              className="block text-center text-blue-200 hover:text-white text-xs mt-2"
+            >
+              Already have an account? Login
             </Link>
-          </p>
-
+          </form>
         </div>
       </div>
     </div>
