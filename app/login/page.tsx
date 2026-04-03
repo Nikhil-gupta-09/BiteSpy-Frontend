@@ -64,32 +64,33 @@ export default function LoginPage() {
   };
 
   return (
-    /* FULL SCREEN LAYOUT */
     <div className="flex h-screen w-full overflow-hidden">
-        
-      {/* LEFT SIDE - FORM (White Background, Full Height) */}
-      <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-white p-8 md:p-12 flex flex-col justify-center border-r border-gray-400 shrink-0 overflow-y-auto">
-        
+
+      {/* LEFT SIDE - FORM (TRANSPARENT / DARK UI) */}
+      <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto">
+
         <div className="max-w-sm w-full mx-auto">
+
           {/* HEADING */}
           <div className="mb-6">
-            <h2 className="text-3xl font-semibold text-gray-900">
+            <h2 className="text-3xl font-semibold text-white">
               Welcome back
             </h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-blue-200 text-sm mt-1">
               Sign in to continue
             </p>
           </div>
 
           {/* TOGGLE */}
-          <div className="flex gap-2 p-1 bg-gray-100 rounded-lg mb-5 border border-gray-200">
+          <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5 backdrop-blur-md">
+
             <button
               type="button"
               onClick={() => setMode("email")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "email"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  ? "bg-white text-[#030f36]"
+                  : "text-blue-200 hover:bg-white/10"
               }`}
             >
               <FiMail size={16} />
@@ -101,8 +102,8 @@ export default function LoginPage() {
               onClick={() => setMode("phone")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "phone"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  ? "bg-white text-[#030f36]"
+                  : "text-blue-200 hover:bg-white/10"
               }`}
             >
               <FiPhone size={16} />
@@ -112,17 +113,17 @@ export default function LoginPage() {
 
           {/* ERROR */}
           {error && (
-            <div className="mb-4 text-red-600 text-sm bg-red-50 border border-red-200 p-3 rounded-md">
+            <div className="mb-4 text-red-300 text-sm bg-red-500/10 border border-red-500/30 p-3 rounded-md">
               {error}
             </div>
           )}
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
             {/* INPUT */}
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
                 {mode === "email" ? <FiMail /> : <FiPhone />}
               </span>
 
@@ -132,14 +133,14 @@ export default function LoginPage() {
                 placeholder={mode === "email" ? "Email" : "Phone number"}
                 value={mode === "email" ? form.email : form.phone}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
                 required
               />
             </div>
 
             {/* PASSWORD */}
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
                 <FiLock />
               </span>
 
@@ -149,14 +150,14 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-10 py-2.5 bg-transparent border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
                 required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-300"
               >
                 {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
@@ -164,7 +165,7 @@ export default function LoginPage() {
 
             {/* FORGOT */}
             <div className="text-right">
-              <Link href="#" className="text-xs text-blue-600 hover:text-blue-800 transition-colors">
+              <Link href="#" className="text-xs text-blue-300 hover:text-white">
                 Forgot password?
               </Link>
             </div>
@@ -173,20 +174,22 @@ export default function LoginPage() {
             <button
               disabled={loading}
               className="w-full py-2.5 rounded-md font-medium 
-              bg-[#030f36] text-white
-              hover:bg-[#030f36]/90 
-              shadow-md shadow-black/10
-              transition hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:hover:scale-100"
+              bg-white text-[#030f36]
+              hover:bg-blue-100 
+              shadow-lg shadow-black/20
+              transition hover:scale-[1.02] active:scale-[0.98]"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
 
             {/* SIGNUP */}
             <div className="text-center mt-4">
-              <span className="text-xs text-gray-500">Don't have an account? </span>
+              <span className="text-xs text-blue-200">
+                Don't have an account?{" "}
+              </span>
               <Link
                 href="/signup"
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                className="text-xs text-white hover:underline font-medium"
               >
                 Create account
               </Link>
@@ -196,8 +199,19 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RIGHT SIDE - COLORLESS/TRANSPARENT (Full Height & Remaining Width) */}
-      <div className="hidden md:block flex-1 h-full bg-transparent"></div>
+      {/* RIGHT SIDE - WHITE PANEL */}
+      <div className="hidden md:flex flex-1 h-full bg-white items-center justify-center">
+
+        <Image
+          src="/hero1.png"
+          alt="Hero"
+          width={500}
+          height={500}
+          className="object-contain"
+          priority
+        />
+
+      </div>
 
     </div>
   );
