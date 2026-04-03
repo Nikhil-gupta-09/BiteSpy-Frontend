@@ -6,6 +6,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { Logo } from "@/components/Logo"; // 👈 ADD THIS
 
 import {
   FiEye,
@@ -66,28 +67,35 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen w-full overflow-hidden">
 
-      {/* LEFT SIDE - FORM (TRANSPARENT / DARK UI) */}
+      {/* LEFT SIDE */}
       <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto">
 
         <div className="max-w-sm w-full mx-auto">
 
-          {/* HEADING */}
-          <div className="mb-6">
-            <h2 className="text-3xl font-semibold text-white">
-              Welcome back
-            </h2>
-            <p className="text-blue-200 text-sm mt-1">
-              Sign in to continue
-            </p>
+          {/* LOGO + HEADING */}
+          <div className="mb-6 space-y-4">
+
+            <div className="flex justify-start">
+              <Logo /> {/* 👈 HERE */}
+            </div>
+
+            <div>
+              <h2 className="text-3xl font-semibold text-white">
+                Welcome back
+              </h2>
+              <p className="text-blue-200 text-sm mt-1">
+                Sign in to continue
+              </p>
+            </div>
+
           </div>
 
           {/* TOGGLE */}
           <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5 backdrop-blur-md">
-
             <button
               type="button"
               onClick={() => setMode("email")}
-              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 ${
                 mode === "email"
                   ? "bg-white text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
@@ -100,7 +108,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setMode("phone")}
-              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+              className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 ${
                 mode === "phone"
                   ? "bg-white text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
@@ -121,7 +129,6 @@ export default function LoginPage() {
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* INPUT */}
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
                 {mode === "email" ? <FiMail /> : <FiPhone />}
@@ -133,12 +140,11 @@ export default function LoginPage() {
                 placeholder={mode === "email" ? "Email" : "Phone number"}
                 value={mode === "email" ? form.email : form.phone}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-400"
                 required
               />
             </div>
 
-            {/* PASSWORD */}
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
                 <FiLock />
@@ -150,7 +156,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
+                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-400"
                 required
               />
 
@@ -163,45 +169,19 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* FORGOT */}
-            <div className="text-right">
-              <Link href="#" className="text-xs text-blue-300 hover:text-white">
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* LOGIN BUTTON */}
             <button
               disabled={loading}
-              className="w-full py-2.5 rounded-md font-medium 
-              bg-white text-[#030f36]
-              hover:bg-blue-100 
-              shadow-lg shadow-black/20
-              transition hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-2.5 rounded-md font-medium bg-white text-[#030f36] hover:bg-blue-100"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
-
-            {/* SIGNUP */}
-            <div className="text-center mt-4">
-              <span className="text-xs text-blue-200">
-                Don't have an account?{" "}
-              </span>
-              <Link
-                href="/signup"
-                className="text-xs text-white hover:underline font-medium"
-              >
-                Create account
-              </Link>
-            </div>
 
           </form>
         </div>
       </div>
 
-      {/* RIGHT SIDE - WHITE PANEL */}
-      <div className="hidden md:flex flex-1 h-full bg-white items-center justify-center">
-
+      {/* RIGHT SIDE */}
+      <div className="hidden md:flex flex-1 h-full items-center justify-center bg-[#f3ede4]">
         <Image
           src="/Mascot_looping.gif"
           alt="Login Mascot"
@@ -211,7 +191,6 @@ export default function LoginPage() {
           priority
           unoptimized
         />
-
       </div>
 
     </div>

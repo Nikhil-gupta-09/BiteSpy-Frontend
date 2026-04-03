@@ -248,7 +248,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT */} 
       <div className="hidden md:flex flex-1 h-full bg-white items-center justify-center">
         <Image src="/hero1.png" alt="Hero" width={500} height={500} />
       </div>
