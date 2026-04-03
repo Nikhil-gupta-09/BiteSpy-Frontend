@@ -7,9 +7,7 @@ export function Logo() {
       <Image 
         src={mascot} 
         alt="BiteSpy Mascot" 
-        width={36} 
-        height={36} 
-        className="object-contain drop-shadow-md" 
+        className="w-9 h-auto object-contain drop-shadow-md" 
         priority
       />
       <span className="text-white font-semibold text-lg tracking-tight">

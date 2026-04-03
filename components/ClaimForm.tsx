@@ -3,7 +3,7 @@ import { FiUploadCloud } from "react-icons/fi";
 
 export default function ClaimForm() {
   return (
-    <section className="
+    <section id="upload-section" className="
       relative px-6 md:px-12 py-32 
       flex justify-center items-center min-h-screen 
       overflow-hidden
@@ -35,7 +35,7 @@ export default function ClaimForm() {
             {/* GLOW RING */}
             <div className="
               absolute inset-0 rounded-[2.5rem]
-              bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20
+              bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30
               blur-xl opacity-70
               group-hover:opacity-100 transition
             " />
@@ -51,8 +51,8 @@ export default function ClaimForm() {
                   px-10 py-14 text-center
                   border border-dashed border-white/20
                   rounded-[2rem]
-                  bg-transparent
-                  hover:border-blue-400/50
+                  bg-slate-900/60 backdrop-blur-xl shadow-2xl
+                  hover:border-emerald-400/50
                   transition-all duration-300
                   cursor-pointer
                 ">
@@ -60,10 +60,10 @@ export default function ClaimForm() {
                   {/* ICON */}
                   <div className="
                     w-20 h-20 rounded-2xl 
-                    bg-gradient-to-br from-blue-500 to-indigo-500
+                    bg-gradient-to-br from-emerald-400 to-cyan-500
                     text-white
                     flex items-center justify-center mb-6
-                    shadow-lg
+                    shadow-[0_0_30px_rgba(16,185,129,0.4)]
                     group-hover:-translate-y-2
                     transition
                   ">
