@@ -56,34 +56,6 @@ export default function Hero() {
           className="rounded-3xl shadow-2xl w-full max-w-md object-cover"
         />
 
-        {/* SCAN CARD */}
-        <div className="absolute bottom-6 left-6 
-        bg-white/10 backdrop-blur-md border border-white/20 
-        rounded-xl px-5 py-4 w-72 shadow-xl">
-
-          <p className="text-xs text-blue-200">🔍 LIVE ANALYSIS</p>
-
-          <div className="flex justify-between items-center mt-1">
-            <span className="text-sm text-white">
-              Protein Bar
-            </span>
-
-            <span className="font-semibold text-white">
-              62/100
-            </span>
-          </div>
-
-          <div className="h-1 bg-white/20 mt-3 rounded">
-
-            {/* FIXED PROGRESS BAR (no gradient) */}
-            <div className="bg-[#f1f5f9] h-1 w-[62%] rounded" />
-
-          </div>
-
-          <p className="text-xs text-blue-200 mt-2">
-            ⚠️ Contains hidden sugars & additives
-          </p>
-        </div>
       </div>
     </section>
   );

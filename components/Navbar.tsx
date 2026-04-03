@@ -21,6 +21,18 @@ export default function Navbar() {
         {/* RIGHT */}
         <div className="flex items-center gap-8">
 
+          {/* NEWS */}
+          <Link
+            href="/news"
+            className="relative text-sm font-medium text-blue-100 
+            transition-all duration-300
+            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] 
+            after:bg-white after:transition-all after:duration-300
+            hover:text-white hover:after:w-full"
+          >
+            News
+          </Link>
+
           {/* LOGIN */}
           <Link
             href="/login"
