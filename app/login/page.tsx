@@ -63,7 +63,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-[#020617] via-[#0b3c6f] to-[#007BFF] flex items-center justify-center px-6">
+    <div className="h-screen overflow-hidden 
+bg-gradient-to-r from-[#020617] via-[#0b3c6f] to-[#007BFF]
+flex items-center justify-center px-6">
 
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
 
