@@ -8,13 +8,13 @@ import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase";
 
-import { 
-  FiEye, 
-  FiEyeOff, 
-  FiMail, 
-  FiPhone, 
+import {
+  FiEye,
+  FiEyeOff,
+  FiMail,
+  FiPhone,
   FiLock,
-  FiUser
+  FiUser,
 } from "react-icons/fi";
 
 type Mode = "email" | "phone";
@@ -85,9 +85,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden 
-    bg-gradient-to-r from-[#020617]/90 via-[#0b3c6f] to-[#007BFF]/90
-    flex items-center justify-center px-6">
+    <div className="h-screen overflow-hidden flex items-center justify-center px-6">
 
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
 
@@ -118,12 +116,13 @@ export default function SignupPage() {
 
           {/* TOGGLE */}
           <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5">
+
             <button
               type="button"
               onClick={() => setMode("email")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "email"
-                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  ? "bg-[#f1f5f9] text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
@@ -136,13 +135,14 @@ export default function SignupPage() {
               onClick={() => setMode("phone")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "phone"
-                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  ? "bg-[#f1f5f9] text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
               <FiPhone size={16} />
               Phone
             </button>
+
           </div>
 
           {/* ERROR */}
@@ -229,12 +229,14 @@ export default function SignupPage() {
               </button>
             </div>
 
-            {/* BUTTON */}
+            {/* SIGNUP BUTTON */}
             <button
               disabled={loading}
-              className="w-full py-2.5 rounded-md font-medium text-white 
-              bg-gradient-to-r from-[#007BFF] to-[#00C6FF]
-               hover:scale-[1.02] active:scale-[0.98] transition"
+              className="w-full py-2.5 rounded-md font-medium 
+              bg-[#f1f5f9] text-[#030f36]
+              hover:bg-[#e2e8f0] 
+              shadow-lg shadow-black/20
+              transition hover:scale-[1.02] active:scale-[0.98]"
             >
               {loading ? "Creating..." : "Sign up"}
             </button>
@@ -246,6 +248,7 @@ export default function SignupPage() {
             >
               Already have an account? Login
             </Link>
+
           </form>
         </div>
       </div>

@@ -9,8 +9,7 @@ export default function Navbar() {
     <nav
       className="fixed top-0 left-0 w-full z-50 
       border-b border-none
-      backdrop-blur-md 
-      bg-gradient-to-r from-[#020617]/90 via-[#0b3c6f]/90 to-[#007BFF]/90"
+      backdrop-blur-md "
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
 

@@ -7,12 +7,12 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
 
-import { 
-  FiEye, 
-  FiEyeOff, 
-  FiMail, 
-  FiPhone, 
-  FiLock 
+import {
+  FiEye,
+  FiEyeOff,
+  FiMail,
+  FiPhone,
+  FiLock,
 } from "react-icons/fi";
 
 type Mode = "email" | "phone";
@@ -49,6 +49,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
       const emailToUse =
         mode === "email" ? form.email : normalizePhoneToEmail(form.phone);
@@ -63,16 +64,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden 
-bg-gradient-to-r from-[#020617] via-[#0b3c6f] to-[#007BFF]
-flex items-center justify-center px-6">
+    <div className="h-screen overflow-hidden flex items-center justify-center px-6">
 
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
 
-        {/* LEFT SIDE */}
+        {/* LEFT IMAGE */}
         <div className="hidden md:flex justify-center items-center">
           <Image
-            src="/hero1.PNG"
+            src="/hero1.png"
             alt="Hero"
             width={420}
             height={420}
@@ -81,7 +80,7 @@ flex items-center justify-center px-6">
           />
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT FORM */}
         <div className="w-full max-w-sm mx-auto">
 
           {/* HEADING */}
@@ -96,12 +95,13 @@ flex items-center justify-center px-6">
 
           {/* TOGGLE */}
           <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5">
+
             <button
               type="button"
               onClick={() => setMode("email")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "email"
-                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  ? "bg-[#f1f5f9] text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
@@ -114,13 +114,14 @@ flex items-center justify-center px-6">
               onClick={() => setMode("phone")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "phone"
-                  ? "bg-gradient-to-r from-[#007BFF] to-[#00C6FF] text-white"
+                  ? "bg-[#f1f5f9] text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
               <FiPhone size={16} />
               Phone
             </button>
+
           </div>
 
           {/* ERROR */}
@@ -182,10 +183,14 @@ flex items-center justify-center px-6">
               </Link>
             </div>
 
-            {/* BUTTON */}
+            {/* LOGIN BUTTON */}
             <button
               disabled={loading}
-              className="w-full py-2.5 rounded-md font-medium text-white bg-gradient-to-r from-[#007BFF] to-[#00C6FF] hover:scale-[1.02] active:scale-[0.98] transition"
+              className="w-full py-2.5 rounded-md font-medium 
+              bg-[#f1f5f9] text-[#030f36]
+              hover:bg-[#e2e8f0] 
+              shadow-lg shadow-black/20
+              transition hover:scale-[1.02] active:scale-[0.98]"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
@@ -197,6 +202,7 @@ flex items-center justify-center px-6">
             >
               Create account
             </Link>
+
           </form>
         </div>
       </div>
