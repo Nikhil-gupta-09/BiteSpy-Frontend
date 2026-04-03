@@ -64,24 +64,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex items-center justify-center px-6">
+    <div className="flex h-screen w-full overflow-hidden">
 
-      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-10 items-center">
+      {/* LEFT SIDE - FORM (TRANSPARENT / DARK UI) */}
+      <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto">
 
-        {/* LEFT IMAGE */}
-        <div className="hidden md:flex justify-center items-center">
-          <Image
-            src="/hero1.png"
-            alt="Hero"
-            width={420}
-            height={420}
-            className="drop-shadow-2xl object-contain"
-            priority
-          />
-        </div>
-
-        {/* RIGHT FORM */}
-        <div className="w-full max-w-sm mx-auto">
+        <div className="max-w-sm w-full mx-auto">
 
           {/* HEADING */}
           <div className="mb-6">
@@ -94,14 +82,14 @@ export default function LoginPage() {
           </div>
 
           {/* TOGGLE */}
-          <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5">
+          <div className="flex gap-2 p-1 bg-white/10 rounded-lg mb-5 backdrop-blur-md">
 
             <button
               type="button"
               onClick={() => setMode("email")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "email"
-                  ? "bg-[#f1f5f9] text-[#030f36]"
+                  ? "bg-white text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
@@ -114,19 +102,18 @@ export default function LoginPage() {
               onClick={() => setMode("phone")}
               className={`flex-1 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
                 mode === "phone"
-                  ? "bg-[#f1f5f9] text-[#030f36]"
+                  ? "bg-white text-[#030f36]"
                   : "text-blue-200 hover:bg-white/10"
               }`}
             >
               <FiPhone size={16} />
               Phone
             </button>
-
           </div>
 
           {/* ERROR */}
           {error && (
-            <div className="mb-4 text-red-400 text-sm bg-red-500/10 border border-red-500/30 p-2 rounded-md">
+            <div className="mb-4 text-red-300 text-sm bg-red-500/10 border border-red-500/30 p-3 rounded-md">
               {error}
             </div>
           )}
@@ -146,7 +133,7 @@ export default function LoginPage() {
                 placeholder={mode === "email" ? "Email" : "Phone number"}
                 value={mode === "email" ? form.email : form.phone}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
                 required
               />
             </div>
@@ -163,7 +150,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
                 required
               />
 
@@ -187,8 +174,8 @@ export default function LoginPage() {
             <button
               disabled={loading}
               className="w-full py-2.5 rounded-md font-medium 
-              bg-[#f1f5f9] text-[#030f36]
-              hover:bg-[#e2e8f0] 
+              bg-white text-[#030f36]
+              hover:bg-blue-100 
               shadow-lg shadow-black/20
               transition hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -196,16 +183,36 @@ export default function LoginPage() {
             </button>
 
             {/* SIGNUP */}
-            <Link
-              href="/signup"
-              className="block text-center text-blue-200 hover:text-white text-xs mt-2"
-            >
-              Create account
-            </Link>
+            <div className="text-center mt-4">
+              <span className="text-xs text-blue-200">
+                Don't have an account?{" "}
+              </span>
+              <Link
+                href="/signup"
+                className="text-xs text-white hover:underline font-medium"
+              >
+                Create account
+              </Link>
+            </div>
 
           </form>
         </div>
       </div>
+
+      {/* RIGHT SIDE - WHITE PANEL */}
+      <div className="hidden md:flex flex-1 h-full bg-white items-center justify-center">
+
+        <Image
+          src="/hero1.png"
+          alt="Hero"
+          width={500}
+          height={500}
+          className="object-contain"
+          priority
+        />
+
+      </div>
+
     </div>
   );
 }
