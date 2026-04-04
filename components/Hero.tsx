@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function Hero() {
@@ -49,7 +50,8 @@ export default function Hero() {
             Scan a Product
           </button>
 
-          <button
+          <Link
+            href="/insights"
             className="px-6 py-3 rounded-lg 
             bg-white/10 border border-white/20 
             text-blue-100 
@@ -57,7 +59,7 @@ export default function Hero() {
             transition"
           >
             See How It Works
-          </button>
+          </Link>
         </div>
       </div>
 

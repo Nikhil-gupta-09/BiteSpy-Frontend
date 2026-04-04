@@ -6,7 +6,12 @@ import { motion } from "framer-motion";
 
 export default function InsightsPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <motion.main 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen bg-white"
+    >
       <Navbar />
 
       {/* TOP HEADER SECTION WITH WAVY BOTTOM */}
@@ -79,9 +84,9 @@ export default function InsightsPage() {
       </section>
 
       {/* HOW DOES THE SYSTEM WORK SECTION */}
-      <section className="py-24 px-6 md:px-12 bg-slate-50 text-slate-800">
+      <section className="py-24 px-6 md:px-12 bg-gradient-to-br from-[#60a5fa] via-[#3b82f6] to-[#030f36] text-white">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-bold mb-20 text-center text-[#1e293b]">
+          <h2 className="text-3xl md:text-5xl font-bold mb-20 text-center text-white drop-shadow-sm">
             How does the system work?
           </h2>
 
@@ -152,6 +157,13 @@ export default function InsightsPage() {
                 <div className="p-3 bg-green-50 rounded-xl border border-green-100 font-medium text-sm text-green-800 flex items-start gap-3">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-green-500 shrink-0"></div>
                   Verify the claims based on the ingredients & labels using LLM mapping.
+                </div>
+                <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200/60 text-sm text-amber-800 space-y-3">
+                  <p><strong>AI processing begins:</strong></p>
+                  <ul className="list-disc ml-5 space-y-1 text-amber-700/90">
+                    <li></li>
+                    <li>Aims to fetch the ingredients and nutrient data of the product.</li>
+                  </ul>
                 </div>
               </div>
             </motion.div>
@@ -297,6 +309,6 @@ export default function InsightsPage() {
       </section>
 
       <Footer />
-    </main>
+    </motion.main>
   );
 }
