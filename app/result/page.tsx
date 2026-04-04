@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import ResultRaccoonChat from "@/components/ResultRaccoonChat";
 import type { AnalysisResult } from "@/lib/claim-analysis";
 
 function isAnalysisResult(payload: unknown): payload is AnalysisResult {
@@ -347,6 +348,8 @@ function ResultContent() {
           ) : null}
         </div>
       </section>
+
+      <ResultRaccoonChat result={result} />
     </main>
   );
 }
