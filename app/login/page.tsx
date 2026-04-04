@@ -55,7 +55,24 @@ export default function LoginPage() {
       const emailToUse =
         mode === "email" ? form.email : normalizePhoneToEmail(form.phone);
 
-      await signInWithEmailAndPassword(auth, emailToUse, form.password);
+      const userCredential = await signInWithEmailAndPassword(auth, emailToUse, form.password);
+
+      const syncResponse = await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailToUse,
+          uid: userCredential.user.uid,
+          mode,
+        }),
+      });
+
+      if (!syncResponse.ok) {
+        const body = (await syncResponse.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "Failed to sync auth user");
+      }
 
       if (typeof window !== "undefined") {
         window.localStorage.setItem(

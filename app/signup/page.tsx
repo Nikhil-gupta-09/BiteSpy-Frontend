@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
 import { PROFILE_EMAIL_STORAGE_KEY, normalizeEmail } from "@/lib/profile";
 
@@ -15,14 +15,11 @@ import {
   FiMail,
   FiPhone,
   FiLock,
-  FiUser,
 } from "react-icons/fi";
 
 type Mode = "email" | "phone";
 
 type FormData = {
-  firstName: string;
-  lastName: string;
   email: string;
   phone: string;
   password: string;
@@ -34,8 +31,6 @@ export default function SignupPage() {
   const [mode, setMode] = useState<Mode>("email");
 
   const [form, setForm] = useState<FormData>({
-    firstName: "",
-    lastName: "",
     email: "",
     phone: "",
     password: "",
@@ -72,9 +67,22 @@ export default function SignupPage() {
         form.password
       );
 
-      await updateProfile(userCredential.user, {
-        displayName: `${form.firstName} ${form.lastName}`,
+      const syncResponse = await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailToUse,
+          uid: userCredential.user.uid,
+          mode,
+        }),
       });
+
+      if (!syncResponse.ok) {
+        const body = (await syncResponse.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "Failed to sync auth user");
+      }
 
       if (typeof window !== "undefined") {
         window.localStorage.setItem(
@@ -153,38 +161,6 @@ export default function SignupPage() {
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
-
-            {/* FIRST NAME */}
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
-                <FiUser />
-              </span>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First name"
-                value={form.firstName}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
-                required
-              />
-            </div>
-
-            {/* LAST NAME */}
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300">
-                <FiUser />
-              </span>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last name"
-                value={form.lastName}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-md text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
-                required
-              />
-            </div>
 
             {/* EMAIL / PHONE */}
             <div className="relative">
