@@ -1,30 +1,16 @@
 "use client";
 
+import Image from "next/image";
+import { motion } from "framer-motion";
+
 export default function Hero() {
   return (
     <section
       className="relative min-h-screen px-16 pt-32 pb-20 
       grid lg:grid-cols-2 gap-16 items-center text-white overflow-hidden"
     >
-      {/* BACKGROUND IMAGE & OVERLAY (Faded at the bottom) */}
-      <div 
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ 
-          maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)", 
-          WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent 100%)" 
-        }}
-      >
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/home_bkg.png')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#4c1d95]/95 via-[#4c1d95]/80 to-transparent mix-blend-multiply" />
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
-
       {/* LEFT CONTENT */}
       <div className="z-10 relative">
-
         <h1 className="text-5xl lg:text-6xl font-semibold leading-tight mb-6">
           Expose the truth
           <br />
@@ -37,12 +23,13 @@ export default function Hero() {
           what you're really consuming.
         </p>
 
-        {/* BUTTONS */}
         <div className="flex gap-4">
-
-          {/* PRIMARY BUTTON */}
           <button
-            onClick={() => document.getElementById("upload-section")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() =>
+              document
+                .getElementById("upload-section")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
             className="px-6 py-3 rounded-lg font-medium 
             bg-[#f1f5f9] text-[#030f36]
             hover:bg-[#e2e8f0] 
@@ -52,7 +39,6 @@ export default function Hero() {
             Scan a Product
           </button>
 
-          {/* SECONDARY BUTTON */}
           <button
             className="px-6 py-3 rounded-lg 
             bg-white/10 border border-white/20 
@@ -62,12 +48,78 @@ export default function Hero() {
           >
             See How It Works
           </button>
-
         </div>
       </div>
 
-      {/* RIGHT VISUAL (Empty for now) */}
-      <div className="relative flex justify-center z-10">
+      {/* RIGHT VISUAL */}
+      <div className="relative flex justify-center items-center z-10 h-[500px]">
+
+        {/* 🦝 RACCOON (CENTER - SLOW FLOAT) */}
+        <motion.div
+          className="absolute scale-[2.6]"
+          style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.4))" }}
+          animate={{
+            y: [0, -15, 0],
+            x: [0, 10, 0],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <Image
+            src="/racoon.png"
+            alt="Raccoon"
+            width={280}
+            height={280}
+            priority
+          />
+        </motion.div>
+
+        {/* 🍎 APPLE (RIGHT + LOWER - CLOSER) */}
+        <motion.div
+          className="absolute right-[-10px] bottom-[40px] scale-[1.3]"
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 12, 0],
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <Image
+            src="/apple.png"
+            alt="Apple"
+            width={140}
+            height={140}
+          />
+        </motion.div>
+
+        {/* 🔍 SCANNER (LEFT + TOP - CLOSER) */}
+        <motion.div
+          className="absolute left-[-20px] top-[30px] scale-[2]"
+          animate={{
+            y: [0, -18, 0],
+            x: [0, -12, 0],
+            rotate: [0, -5, 5, 0],
+          }}
+          transition={{
+            duration: 4.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <Image
+            src="/scanner.png"
+            alt="Scanner"
+            width={140}
+            height={140}
+          />
+        </motion.div>
 
       </div>
     </section>
