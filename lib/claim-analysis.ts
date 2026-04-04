@@ -53,4 +53,5 @@ export interface AnalysisResult {
     recommendedLabels: string[];
     ingredients: string[];
     alternatives: AlternativeProduct[];
+    desiredDosage: string;
 }

@@ -19,6 +19,7 @@ interface GeminiAnalysisShape {
     labelAlerts?: string[];
     goodPoints?: string[];
     recommendedLabels?: string[];
+    desiredDosage?: string;
     alternatives?: Array<{
         name?: string;
         reason?: string;
@@ -66,6 +67,7 @@ Return ONLY valid JSON in this exact shape:
   "labelAlerts": string[],
   "goodPoints": string[],
   "recommendedLabels": string[],
+  "desiredDosage": string,
   "alternatives": [
     { "name": string, "reason": string, "fit": "healthier" | "allergy-safe" | "preference-match" | "budget", "priceTier": "low" | "medium" | "high" }
   ]
@@ -108,6 +110,7 @@ ${JSON.stringify(answers, null, 2)}
             goodPoints: (gemini.goodPoints ?? []).slice(0, 6),
             recommendedLabels: (gemini.recommendedLabels ?? []).slice(0, 8),
             ingredients: scan.ingredients,
+            desiredDosage: gemini.desiredDosage?.trim() || "Consult healthcare provider or follow package instructions.",
             alternatives: (gemini.alternatives ?? []).slice(0, 6).map((item) => ({
                 name: item.name?.trim() || "Alternative option",
                 reason: item.reason?.trim() || "Better fit for your selected goals.",

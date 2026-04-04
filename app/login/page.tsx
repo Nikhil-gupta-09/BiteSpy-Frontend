@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { PROFILE_EMAIL_STORAGE_KEY, normalizeEmail } from "@/lib/profile";
@@ -200,6 +201,13 @@ export default function LoginPage() {
             </button>
 
           </form>
+
+          <p className="mt-6 text-center text-sm text-blue-200">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-white hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
 

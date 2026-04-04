@@ -39,6 +39,7 @@ function fallbackResult(scanId: string): AnalysisResult {
     goodPoints: ["Convenient", "May provide quick energy"],
     recommendedLabels: ["Low added sugar", "High fiber", "No artificial color"],
     ingredients: ["Unknown from fallback"],
+    desiredDosage: "1-2 tablespoons per serving, up to twice daily depending on calorie goals.",
     alternatives: [
       {
         name: "Unsweetened nut spread",
@@ -286,6 +287,11 @@ function ResultContent() {
                 <li key={`${item}-${index}`}>{item}</li>
               ))}
             </ul>
+          </article>
+
+          <article className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-400/10 p-6">
+            <h2 className="text-xl font-bold text-fuchsia-100">Desired Dosage</h2>
+            <p className="mt-3 text-fuchsia-50">{result.desiredDosage}</p>
           </article>
         </div>
 
