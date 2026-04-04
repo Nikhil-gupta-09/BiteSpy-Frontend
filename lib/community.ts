@@ -3,8 +3,12 @@ import type { AnalysisResult } from "@/lib/claim-analysis";
 
 export interface CommunityPostDoc {
     _id?: ObjectId;
+    postType: "analysis" | "user";
     scanId: string;
     productName: string;
+    bodyText?: string;
+    mediaUrl?: string;
+    mediaPublicId?: string;
     claimOMeter: number;
     verdict: string;
     personalizedSummary: string;
@@ -40,8 +44,11 @@ export interface CommunityReactionDoc {
 
 export interface CommunityPostView {
     id: string;
+    postType: "analysis" | "user";
     scanId: string;
     productName: string;
+    bodyText?: string;
+    mediaUrl?: string;
     claimOMeter: number;
     verdict: string;
     personalizedSummary: string;
@@ -82,6 +89,7 @@ export function normalizeAuthorName(raw: unknown): string {
 export function toPostDocument(result: AnalysisResult, authorName: string): CommunityPostDoc {
     const now = new Date();
     return {
+        postType: "analysis",
         scanId: result.scanId,
         productName: result.productName,
         claimOMeter: result.claimOMeter,
@@ -92,6 +100,39 @@ export function toPostDocument(result: AnalysisResult, authorName: string): Comm
         labelAlerts: result.labelAlerts.slice(0, 6),
         recommendedLabels: result.recommendedLabels.slice(0, 6),
         authorName,
+        createdAt: now,
+        updatedAt: now,
+        reactionCounts: {
+            like: 0,
+            dislike: 0,
+        },
+        commentCount: 0,
+    };
+}
+
+export function toUserPostDocument(input: {
+    authorName: string;
+    productName: string;
+    bodyText: string;
+    mediaUrl?: string;
+    mediaPublicId?: string;
+}): CommunityPostDoc {
+    const now = new Date();
+    return {
+        postType: "user",
+        scanId: `post-${now.getTime()}`,
+        productName: input.productName,
+        bodyText: input.bodyText,
+        mediaUrl: input.mediaUrl,
+        mediaPublicId: input.mediaPublicId,
+        claimOMeter: 0,
+        verdict: "Community post",
+        personalizedSummary: input.bodyText,
+        falseClaims: [],
+        harmfulIngredients: [],
+        labelAlerts: [],
+        recommendedLabels: [],
+        authorName: input.authorName,
         createdAt: now,
         updatedAt: now,
         reactionCounts: {

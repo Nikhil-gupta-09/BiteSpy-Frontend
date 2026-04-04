@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { getMongoDb } from "@/lib/mongodb";
 import type { CommunityCommentDoc, CommunityPostDoc } from "@/lib/community";
 import { normalizeAuthorName, toObjectId } from "@/lib/community";
+import { getAuthenticatedUser } from "@/lib/auth-session";
 
 export const runtime = "nodejs";
 
 interface CommentBody {
-    authorName?: string;
     text?: string;
 }
 
@@ -49,10 +49,15 @@ export async function POST(
     context: { params: Promise<{ postId: string }> }
 ): Promise<Response> {
     try {
+        const authUser = await getAuthenticatedUser(request);
+        if (!authUser) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { postId: postIdParam } = await context.params;
         const postId = toObjectId(postIdParam);
         const body = (await request.json()) as CommentBody;
-        const authorName = normalizeAuthorName(body.authorName);
+        const authorName = normalizeAuthorName(authUser.fullName || authUser.email.split("@")[0] || "Anonymous Spy");
         const text = typeof body.text === "string" ? body.text.trim() : "";
 
         if (!text) {

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebase";
 import { PROFILE_EMAIL_STORAGE_KEY, type UserProfile, emptyProfile } from "@/lib/profile";
 
 type LoadState = "loading" | "ready" | "error";
@@ -32,21 +30,37 @@ export default function ProfilePage() {
   }, [profile]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const resolvedEmail = user?.email ?? localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) ?? "";
+    let active = true;
+    const loadSession = async () => {
+      try {
+        const response = await fetch("/api/auth/me", { cache: "no-store" });
+        const payload = (await response.json()) as { user?: { email?: string } | null };
+        const resolvedEmail = payload.user?.email || localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) || "";
 
-      console.log("[profile] Auth state changed:", { user: user?.email, localStorage: localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY), resolved: resolvedEmail });
+        if (!active) {
+          return;
+        }
 
-      if (resolvedEmail) {
-        localStorage.setItem(PROFILE_EMAIL_STORAGE_KEY, resolvedEmail);
-        setEmail(resolvedEmail);
-      } else {
-        setError("Sign in to view your profile.");
-        setStatus("error");
+        if (resolvedEmail) {
+          localStorage.setItem(PROFILE_EMAIL_STORAGE_KEY, resolvedEmail);
+          setEmail(resolvedEmail);
+        } else {
+          setError("Sign in to view your profile.");
+          setStatus("error");
+        }
+      } catch {
+        if (active) {
+          setError("Sign in to view your profile.");
+          setStatus("error");
+        }
       }
-    });
+    };
 
-    return unsubscribe;
+    void loadSession();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -63,7 +77,7 @@ export default function ProfilePage() {
       setError("");
 
       try {
-        const url = `/api/profile?email=${encodeURIComponent(email)}`;
+        const url = `/api/profile`;
         console.log("[profile] Fetching:", url);
         const response = await fetch(url, {
           cache: "no-store",
@@ -125,7 +139,7 @@ export default function ProfilePage() {
     setMessage("");
 
     try {
-      const { email: profileEmail, ...profileData } = normalizedProfile;
+      const { email: _profileEmail, ...profileData } = normalizedProfile;
 
       const response = await fetch("/api/profile", {
         method: "PUT",
@@ -133,7 +147,6 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: profileEmail || email,
           ...profileData,
         }),
       });

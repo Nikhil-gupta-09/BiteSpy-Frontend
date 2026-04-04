@@ -4,9 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase";
 import { PROFILE_EMAIL_STORAGE_KEY, normalizeEmail } from "@/lib/profile";
 
 import {
@@ -61,27 +58,21 @@ export default function SignupPage() {
           ? form.email
           : normalizePhoneToEmail(form.phone);
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        emailToUse,
-        form.password
-      );
-
-      const syncResponse = await fetch("/api/auth/sync", {
+      const signupResponse = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: emailToUse,
-          uid: userCredential.user.uid,
+          password: form.password,
           mode,
         }),
       });
 
-      if (!syncResponse.ok) {
-        const body = (await syncResponse.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error ?? "Failed to sync auth user");
+      if (!signupResponse.ok) {
+        const body = (await signupResponse.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "Signup failed");
       }
 
       if (typeof window !== "undefined") {

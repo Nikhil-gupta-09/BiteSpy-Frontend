@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import { getMongoDb } from "@/lib/mongodb";
 import type { AnalysisResult } from "@/lib/claim-analysis";
 import type { CommunityCommentDoc, CommunityPostDoc, CommunityPostView, CommunityReactionDoc } from "@/lib/community";
-import { normalizeAuthorName, toPostDocument } from "@/lib/community";
+import { normalizeAuthorName, toPostDocument, toUserPostDocument } from "@/lib/community";
+import { getAuthenticatedUser } from "@/lib/auth-session";
 
 export const runtime = "nodejs";
 
 interface CreatePostBody {
     result?: AnalysisResult;
-    authorName?: string;
+    productName?: string;
+    text?: string;
+    mediaUrl?: string;
+    mediaPublicId?: string;
 }
 
 function toDateISOString(value: Date | string | undefined): string {
@@ -31,8 +35,11 @@ function serializePost(
 ): CommunityPostView {
     return {
         id: doc._id.toHexString(),
+        postType: doc.postType || "analysis",
         scanId: doc.scanId,
         productName: doc.productName,
+        bodyText: doc.bodyText,
+        mediaUrl: doc.mediaUrl,
         claimOMeter: doc.claimOMeter,
         verdict: doc.verdict,
         personalizedSummary: doc.personalizedSummary,
@@ -125,18 +132,41 @@ export async function GET(request: Request): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
     try {
+        const authUser = await getAuthenticatedUser(request);
+        if (!authUser) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const body = (await request.json()) as CreatePostBody;
         const result = body.result;
 
-        if (!result || !result.scanId || !result.productName) {
-            return NextResponse.json({ error: "Missing or invalid analysis result payload." }, { status: 400 });
+        const isAnalysisPost = Boolean(result?.scanId && result?.productName);
+        const isUserPost = Boolean(body.productName?.trim() && body.text?.trim());
+
+        if (!isAnalysisPost && !isUserPost) {
+            return NextResponse.json({ error: "Invalid post payload." }, { status: 400 });
+        }
+
+        if (isUserPost && !authUser.verified) {
+            return NextResponse.json({ error: "Only verified users can create custom posts." }, { status: 403 });
         }
 
         const db = await getMongoDb();
         const postsCollection = db.collection<CommunityPostDoc>("community_posts");
         const commentsCollection = db.collection<CommunityCommentDoc>("community_comments");
 
-        const postDoc = toPostDocument(result, normalizeAuthorName(body.authorName));
+        const authorName = normalizeAuthorName(authUser.fullName || authUser.email.split("@")[0] || "Anonymous Spy");
+
+        const postDoc = isAnalysisPost
+            ? toPostDocument(result as AnalysisResult, authorName)
+            : toUserPostDocument({
+                authorName,
+                productName: body.productName?.trim() || "Untitled post",
+                bodyText: body.text?.trim() || "",
+                mediaUrl: body.mediaUrl?.trim() || undefined,
+                mediaPublicId: body.mediaPublicId?.trim() || undefined,
+            });
+
         const insert = await postsCollection.insertOne(postDoc);
 
         await postsCollection.createIndex({ createdAt: -1 });

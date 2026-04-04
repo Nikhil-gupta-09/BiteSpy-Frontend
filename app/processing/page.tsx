@@ -47,7 +47,9 @@ function ProcessingContent() {
         sessionStorage.setItem("bitespy:lastResultScanId", scanId);
 
         try {
-          const email = localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) || "";
+          const meResponse = await fetch("/api/auth/me", { cache: "no-store" });
+          const mePayload = (await meResponse.json()) as { user?: { email?: string } | null };
+          const email = mePayload.user?.email || localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) || "";
           if (email.trim()) {
             const sourceRaw = sessionStorage.getItem("bitespy:lastScanSource");
             const source = sourceRaw === "image" || sourceRaw === "name" ? sourceRaw : "unknown";
