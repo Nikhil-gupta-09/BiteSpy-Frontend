@@ -4,32 +4,53 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Logo } from "./Logo";
-import { FiArrowRight, FiUser, FiLogOut, FiClock } from "react-icons/fi";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "@/firebase";
+import { FiArrowRight, FiUser, FiLogOut, FiClock, FiEdit3 } from "react-icons/fi";
+
+interface SessionUser {
+  email: string;
+  fullName: string;
+  verified: boolean;
+}
 
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser) {
-        setUser({ email: authUser.email || "" });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+    let active = true;
+    const load = async () => {
+      try {
+        const response = await fetch("/api/auth/me", { cache: "no-store" });
+        const payload = (await response.json()) as { user?: SessionUser | null };
+        if (!active) {
+          return;
+        }
 
-    return unsubscribe;
+        setUser(payload.user ?? null);
+      } catch {
+        if (active) {
+          setUser(null);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await fetch("/api/auth/logout", { method: "POST" });
+      setUser(null);
       setDropdownOpen(false);
       router.push("/");
     } catch (error) {
@@ -44,6 +65,11 @@ export default function Navbar() {
 
   const handleHistoryClick = () => {
     router.push("/#upload-section");
+    setDropdownOpen(false);
+  };
+
+  const handlePostClick = () => {
+    router.push("/community?compose=1");
     setDropdownOpen(false);
   };
 
@@ -144,6 +170,17 @@ export default function Navbar() {
                         <FiClock size={16} />
                         Search History
                       </button>
+
+                      {user.verified ? (
+                        <button
+                          onClick={handlePostClick}
+                          className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 
+                          transition-colors duration-200 flex items-center gap-2"
+                        >
+                          <FiEdit3 size={16} />
+                          Post
+                        </button>
+                      ) : null}
 
                       {/* LOGOUT BUTTON */}
                       <button

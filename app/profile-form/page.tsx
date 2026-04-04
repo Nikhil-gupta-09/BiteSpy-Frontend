@@ -3,8 +3,6 @@
 import Image from "next/image";
 import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebase";
 import { PROFILE_EMAIL_STORAGE_KEY } from "@/lib/profile";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -34,21 +32,36 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const resolvedEmail = user?.email ?? localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) ?? "";
+    let active = true;
+    const loadSession = async () => {
+      try {
+        const response = await fetch("/api/auth/me", { cache: "no-store" });
+        const payload = (await response.json()) as { user?: { email?: string } | null };
+        const resolvedEmail = payload.user?.email ?? localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) ?? "";
 
-      console.log("[profile-form] Auth state changed:", { user: user?.email, localStorage: localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY), resolved: resolvedEmail });
+        if (!active) {
+          return;
+        }
 
-      if (resolvedEmail) {
-        localStorage.setItem(PROFILE_EMAIL_STORAGE_KEY, resolvedEmail);
-        setEmail(resolvedEmail);
-        setSubmitError("");
-      } else {
-        setSubmitError("Sign in to continue to your profile.");
+        if (resolvedEmail) {
+          localStorage.setItem(PROFILE_EMAIL_STORAGE_KEY, resolvedEmail);
+          setEmail(resolvedEmail);
+          setSubmitError("");
+        } else {
+          setSubmitError("Sign in to continue to your profile.");
+        }
+      } catch {
+        if (active) {
+          setSubmitError("Sign in to continue to your profile.");
+        }
       }
-    });
+    };
 
-    return unsubscribe;
+    void loadSession();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +95,6 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
           ...form,
           age: Number(form.age),
           height: Number(form.height),
