@@ -3,6 +3,7 @@ import hero1 from "@/public/hero1.png"
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { FiSearch, FiZap, FiShield } from "react-icons/fi";
 
 export default function InsightsPage() {
   return (
@@ -248,65 +249,71 @@ export default function InsightsPage() {
 
       {/* WHY USE OUR PLATFORM SECTION */}
       <section className="py-24 px-6 md:px-12 bg-white text-slate-800">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-16 text-[#1e293b]">
-            Why use our platform?
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-10">
-            {/* Feature 1 */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="w-14 h-14 mx-auto bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-6">
-                💡
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-800">Uncover Hidden Truths</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Marketing labels are designed to sell, not educate. We use advanced AI to bypass front-of-pack buzzwords and reveal exactly what's inside your food.
-              </p>
-            </motion.div>
+      <div className="max-w-6xl mx-auto text-center">
+        <h2 className="text-3xl md:text-5xl font-bold mb-16 text-[#1e293b]">
+          Why use our platform?
+        </h2>
 
-            {/* Feature 2 */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="w-14 h-14 mx-auto bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-6">
-                ⚡
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-800">Fast & Effortless</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Don't waste time researching chemical names in the grocery aisle. Snap a photo of a label and get a comprehensive scientific breakdown in seconds.
-              </p>
-            </motion.div>
+        <div className="grid md:grid-cols-3 gap-10">
+          {/* Feature 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="w-14 h-14 mx-auto bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+              <FiSearch />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-800">
+              Uncover Hidden Truths
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Marketing labels are designed to sell, not educate. We use advanced AI to bypass front-of-pack buzzwords and reveal exactly what's inside your food.
+            </p>
+          </motion.div>
 
-            {/* Feature 3 */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="w-14 h-14 mx-auto bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-6">
-                🛡️
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-800">Personalized Health</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Connect your medical conditions, allergies, and diet preferences for customized safety alerts so you only consume what's strictly safe for your body.
-              </p>
-            </motion.div>
-          </div>
+          {/* Feature 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="w-14 h-14 mx-auto bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+              <FiZap />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-800">
+              Fast & Effortless
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Don't waste time researching chemical names in the grocery aisle. Snap a photo of a label and get a comprehensive scientific breakdown in seconds.
+            </p>
+          </motion.div>
+
+          {/* Feature 3 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="p-8 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="w-14 h-14 mx-auto bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+              <FiShield />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-800">
+              Personalized Health
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Connect your medical conditions, allergies, and diet preferences for customized safety alerts so you only consume what's strictly safe for your body.
+            </p>
+          </motion.div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <Footer />
     </motion.main>
