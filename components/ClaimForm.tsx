@@ -2,13 +2,79 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
+import type { ScanResult } from "@/lib/claim-analysis";
+
+function toDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const value = typeof reader.result === "string" ? reader.result : "";
+      if (!value) {
+        reject(new Error("Could not read file data."));
+        return;
+      }
+      resolve(value);
+    };
+    reader.onerror = () => reject(new Error("Failed to read selected image."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadToCloudinary(file: File): Promise<{ secureUrl: string; publicId: string } | null> {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    return null;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", uploadPreset);
+  formData.append("folder", "bitespy");
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(`Cloudinary upload failed: ${message}`);
+  }
+
+  const payload = (await response.json()) as { secure_url?: string; public_id?: string };
+
+  if (!payload.secure_url || !payload.public_id) {
+    throw new Error("Cloudinary did not return a usable image URL.");
+  }
+
+  return { secureUrl: payload.secure_url, publicId: payload.public_id };
+}
 
 export default function ClaimForm() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [typedProductName, setTypedProductName] = useState("");
   const [fileName, setFileName] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageDataUrl, setImageDataUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [cloudinaryUrl, setCloudinaryUrl] = useState("");
+  const [isPreparingImage, setIsPreparingImage] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanError, setScanError] = useState("");
+  const [detectedProduct, setDetectedProduct] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -21,11 +87,108 @@ export default function ClaimForm() {
       return;
     }
 
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setSelectedFile(file);
     setFileName(file.name);
+    setPreviewUrl(URL.createObjectURL(file));
+    setCloudinaryUrl("");
+    setScanError("");
+    setDetectedProduct("");
+
+    setIsPreparingImage(true);
+    void toDataUrl(file)
+      .then(async (value) => {
+        setImageDataUrl(value);
+        await scanFromUploadedFile(file, value);
+      })
+      .catch((error) => {
+        setImageDataUrl("");
+        setScanError(error instanceof Error ? error.message : "Failed to prepare uploaded image.");
+      })
+      .finally(() => {
+        setIsPreparingImage(false);
+      });
+
+    event.target.value = "";
   };
 
-  const goToQuestions = () => {
-    router.push("/questions?product=nutella");
+  const startScan = async (body: {
+    imageDataUrl?: string;
+    productName?: string;
+    cloudinaryUrl?: string;
+    cloudinaryPublicId?: string;
+  }) => {
+    setIsScanning(true);
+    setScanError("");
+
+    try {
+      const response = await fetch("/api/scan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const payload = (await response.json()) as ScanResult | { error?: string; message?: string };
+
+      if (!response.ok || !("scanId" in payload)) {
+        const errMessage = "error" in payload && payload.error ? payload.error : "Could not analyze this product.";
+        setScanError(errMessage);
+        return;
+      }
+
+      const scan = payload;
+      setDetectedProduct(scan.productName);
+      sessionStorage.setItem(`bitespy:scan:${scan.scanId}`, JSON.stringify(scan));
+      sessionStorage.setItem("bitespy:lastScanId", scan.scanId);
+      router.push(`/questions?scanId=${encodeURIComponent(scan.scanId)}`);
+    } catch (error) {
+      setScanError(error instanceof Error ? error.message : "Scan failed. Please try again.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const scanFromUploadedFile = async (file: File, payloadImage: string) => {
+    if (isScanning) {
+      return;
+    }
+
+    try {
+      try {
+        const cloudinaryAsset = await uploadToCloudinary(file);
+
+        if (cloudinaryAsset) {
+          setCloudinaryUrl(cloudinaryAsset.secureUrl);
+          sessionStorage.setItem("bitespy:lastCloudinaryUrl", cloudinaryAsset.secureUrl);
+          await startScan({
+            imageDataUrl: payloadImage,
+            cloudinaryUrl: cloudinaryAsset.secureUrl,
+            cloudinaryPublicId: cloudinaryAsset.publicId,
+          });
+          return;
+        }
+      } catch (cloudinaryError) {
+        console.warn(cloudinaryError);
+      }
+
+      await startScan({ imageDataUrl: payloadImage });
+    } catch (error) {
+      setScanError(error instanceof Error ? error.message : "Scan failed. Please try again.");
+    }
+  };
+
+  const goToQuestionsByName = async () => {
+    const productName = typedProductName.trim();
+    if (!productName || isScanning) {
+      return;
+    }
+
+    await startScan({ productName });
   };
 
   return (
@@ -93,7 +256,7 @@ export default function ClaimForm() {
 
                   <p className="text-xl font-semibold text-white">Upload product label</p>
                   <p className="text-sm text-slate-300 mt-2">
-                    Hardcoded demo product: Nutella jar front label
+                    Gemini will detect product, ingredients, and likely claim labels.
                   </p>
 
                   <button
@@ -104,7 +267,10 @@ export default function ClaimForm() {
                     transition
                   "
                     type="button"
-                    onClick={handleUploadClick}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleUploadClick();
+                    }}
                   >
                     Browse Files
                   </button>
@@ -112,6 +278,46 @@ export default function ClaimForm() {
                   {fileName ? (
                     <p className="mt-4 rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
                       Uploaded: {fileName}
+                    </p>
+                  ) : null}
+
+                  {previewUrl ? (
+                    <Image
+                      src={previewUrl}
+                      alt="Uploaded product"
+                      width={240}
+                      height={240}
+                      className="mt-4 h-40 w-40 rounded-xl border border-white/20 object-cover"
+                      unoptimized
+                    />
+                  ) : null}
+
+                  {isPreparingImage ? (
+                    <p className="mt-3 rounded-lg border border-amber-300/30 bg-amber-400/10 px-4 py-2 text-sm text-amber-100">
+                      Preparing image...
+                    </p>
+                  ) : null}
+
+                  {detectedProduct ? (
+                    <p className="mt-3 rounded-lg border border-cyan-300/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100">
+                      Detected: {detectedProduct}
+                    </p>
+                  ) : null}
+
+                  {cloudinaryUrl ? (
+                    <a
+                      href={cloudinaryUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 block rounded-lg border border-sky-300/30 bg-sky-400/10 px-4 py-2 text-sm text-sky-100 underline decoration-sky-200/70 underline-offset-4"
+                    >
+                      Stored on Cloudinary
+                    </a>
+                  ) : null}
+
+                  {scanError ? (
+                    <p className="mt-3 rounded-lg border border-red-300/30 bg-red-400/10 px-4 py-2 text-sm text-red-100">
+                      {scanError}
                     </p>
                   ) : null}
 
@@ -126,20 +332,30 @@ export default function ClaimForm() {
               </div>
             </div>
 
-            <button
-              className="
-              w-full py-5 rounded-2xl font-semibold text-lg
-              bg-[#0f172a] text-white border border-white/10
-              hover:bg-[#1e293b]
-              transition-all duration-200
-              disabled:cursor-not-allowed disabled:opacity-60
-            "
-              type="button"
-              onClick={goToQuestions}
-              disabled={!fileName}
-            >
-              {fileName ? "Start BiteSpy Questions" : "Upload first to continue"}
-            </button>
+            <p className="rounded-2xl border border-white/15 bg-white/5 px-5 py-4 text-sm text-cyan-100">
+              Uploading an image now auto-starts the scan and takes you to the next step.
+            </p>
+
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-md">
+              <p className="text-sm font-semibold tracking-[0.08em] text-cyan-100">OR TYPE PRODUCT NAME</p>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="text"
+                  value={typedProductName}
+                  onChange={(event) => setTypedProductName(event.target.value)}
+                  placeholder="e.g. Nutella, Maggi Noodles, Oreo"
+                  className="w-full rounded-xl border border-white/20 bg-[#091842] px-4 py-3 text-white outline-none placeholder:text-slate-300 focus:border-cyan-300"
+                />
+                <button
+                  type="button"
+                  onClick={goToQuestionsByName}
+                  disabled={!typedProductName.trim() || isScanning}
+                  className="rounded-xl border border-cyan-200/40 bg-cyan-400/15 px-5 py-3 font-semibold text-white transition hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isScanning ? "Analyzing..." : "Use name"}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="relative flex justify-center items-center">

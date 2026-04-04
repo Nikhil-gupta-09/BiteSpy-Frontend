@@ -3,20 +3,64 @@
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import type { AnalysisResult, UserAnswer } from "@/lib/claim-analysis";
+
+function isAnalysisResult(payload: unknown): payload is AnalysisResult {
+  return Boolean(payload && typeof payload === "object" && "scanId" in payload && "claimOMeter" in payload);
+}
 
 function ProcessingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const product = searchParams.get("product") ?? "nutella";
-  const yes = searchParams.get("yes") ?? "0";
+  const scanId = searchParams.get("scanId") ?? "";
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace(`/result?product=${encodeURIComponent(product)}&yes=${yes}`);
-    }, 2200);
+    let isMounted = true;
 
-    return () => clearTimeout(timer);
-  }, [product, router, yes]);
+    const runAnalysis = async () => {
+      if (!scanId) {
+        router.replace("/");
+        return;
+      }
+
+      try {
+        const answersRaw = sessionStorage.getItem(`bitespy:answers:${scanId}`);
+        const answers = answersRaw ? (JSON.parse(answersRaw) as UserAnswer[]) : [];
+
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ scanId, answers }),
+        });
+
+        const payload = (await response.json()) as AnalysisResult | { error?: string };
+
+        if (!response.ok || !isAnalysisResult(payload)) {
+          const message = "error" in payload && payload.error ? payload.error : "Could not build result report.";
+          throw new Error(message);
+        }
+
+        sessionStorage.setItem(`bitespy:result:${scanId}`, JSON.stringify(payload));
+        sessionStorage.setItem("bitespy:lastResultScanId", scanId);
+
+        if (isMounted) {
+          router.replace(`/result?scanId=${encodeURIComponent(scanId)}`);
+        }
+      } catch {
+        if (isMounted) {
+          router.replace(`/result?scanId=${encodeURIComponent(scanId)}&fallback=1`);
+        }
+      }
+    };
+
+    void runAnalysis();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, scanId]);
 
   return (
     <main className="min-h-screen">
@@ -25,7 +69,7 @@ function ProcessingContent() {
         <div className="h-20 w-20 animate-spin rounded-full border-4 border-cyan-200/40 border-t-cyan-200" />
         <h1 className="mt-8 text-center text-3xl font-bold text-white">Crunching label truth data...</h1>
         <p className="mt-3 text-center text-blue-100">
-          BiteSpy is cross-checking branding claims vs ingredient reality for {product}.
+          BiteSpy is checking false claims, harmful ingredients, and safer alternatives.
         </p>
       </section>
     </main>

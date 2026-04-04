@@ -88,6 +88,7 @@ Set these in [.env](.env):
 - `FIREBASE_PRIVATE_KEY`
 - `MONGODB_URI`
 - `MONGODB_DB_NAME`
+- `GEMINI_API_KEY`
 
 ## Local Development
 
