@@ -4,6 +4,7 @@ import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import type { AnalysisResult, UserAnswer } from "@/lib/claim-analysis";
+import { PROFILE_EMAIL_STORAGE_KEY } from "@/lib/profile";
 
 function isAnalysisResult(payload: unknown): payload is AnalysisResult {
   return Boolean(payload && typeof payload === "object" && "scanId" in payload && "claimOMeter" in payload);
@@ -44,6 +45,27 @@ function ProcessingContent() {
 
         sessionStorage.setItem(`bitespy:result:${scanId}`, JSON.stringify(payload));
         sessionStorage.setItem("bitespy:lastResultScanId", scanId);
+
+        try {
+          const email = localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) || "";
+          if (email.trim()) {
+            const sourceRaw = sessionStorage.getItem("bitespy:lastScanSource");
+            const source = sourceRaw === "image" || sourceRaw === "name" ? sourceRaw : "unknown";
+            await fetch("/api/history", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                source,
+                result: payload,
+              }),
+            });
+          }
+        } catch {
+          // History persistence is best-effort and should not block result navigation.
+        }
 
         if (isMounted) {
           router.replace(`/result?scanId=${encodeURIComponent(scanId)}`);
