@@ -121,7 +121,11 @@ Rules:
 `;
 
         const inlineData = hasImage ? parseDataUrl(body.imageDataUrl as string) : undefined;
-        const gemini = await generateGeminiJson<GeminiScanShape>(prompt, inlineData);
+        const gemini = await generateGeminiJson<GeminiScanShape>(prompt, inlineData, {
+            profile: "scan-agent",
+            action: "scan_product",
+            goal: "Detect product and create ingredient-focused health/allergy/preference questions.",
+        });
         const scanId = randomUUID();
 
         const normalized: ScanResult = {
