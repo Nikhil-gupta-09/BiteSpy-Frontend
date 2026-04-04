@@ -89,6 +89,12 @@ Set these in [.env](.env):
 - `MONGODB_URI`
 - `MONGODB_DB_NAME`
 - `GEMINI_API_KEY`
+- `ARMORIQ_API_KEY`
+- `ARMORIQ_USER_ID` (or `USER_ID`)
+- `ARMORIQ_AGENT_ID` (or `AGENT_ID`)
+- `ARMORIQ_MCP_SERVER_NAME` (single deployed MCP server registered in ArmorIQ)
+- `ARMORIQ_PROXY_ENDPOINT` (optional)
+- `ARMORIQ_STRICT_MODE` (optional, set `true` to fail instead of falling back to direct Gemini)
 
 ## Local Development
 
@@ -111,6 +117,13 @@ npm run build
 - MongoDB Atlas stores a lightweight auth mirror in `auth_users`.
 - Firestore stores the profile form data used by the profile pages.
 - The profile question/result flow is frontend-only for now and hardcoded for the Nutella demo case.
+
+## ArmorIQ Single-MCP Integration
+
+- AI execution now supports ArmorIQ SDK with one MCP server and multiple tools.
+- `scan-agent` and `analyze-agent` are enforced with separate policy allow/deny sets in [lib/armoriq-policy.ts](lib/armoriq-policy.ts).
+- Business logic in scan/analyze routes remains unchanged; only execution transport changed.
+- If ArmorIQ env vars are missing, backend falls back to direct Gemini unless `ARMORIQ_STRICT_MODE=true`.
 
 ## Extending The App
 

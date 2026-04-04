@@ -84,7 +84,11 @@ User answers JSON:
 ${JSON.stringify(answers, null, 2)}
 `;
 
-        const gemini = await generateGeminiJson<GeminiAnalysisShape>(prompt);
+        const gemini = await generateGeminiJson<GeminiAnalysisShape>(prompt, undefined, {
+            profile: "analyze-agent",
+            action: "analyze_claims",
+            goal: "Produce claim-o-meter verdict, harmful ingredients, label risks, and alternatives.",
+        });
 
         const result: AnalysisResult = {
             scanId,

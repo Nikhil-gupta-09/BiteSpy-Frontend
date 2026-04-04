@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@armoriq/sdk": "^0.2.10",
     "@netlify/plugin-nextjs": "^5.15.9",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
