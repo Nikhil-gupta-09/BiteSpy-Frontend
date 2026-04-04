@@ -79,6 +79,10 @@ function ResultContent() {
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [shareName, setShareName] = useState("Anonymous Spy");
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareError, setShareError] = useState("");
+  const [shareSuccess, setShareSuccess] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -129,6 +133,50 @@ function ResultContent() {
       mounted = false;
     };
   }, [scanId]);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("bitespy:community:authorName");
+    if (stored?.trim()) {
+      setShareName(stored.trim());
+    }
+  }, []);
+
+  const shareToCommunity = async () => {
+    if (!result || isSharing) {
+      return;
+    }
+
+    setIsSharing(true);
+    setShareError("");
+    setShareSuccess("");
+
+    const authorName = shareName.trim() || "Anonymous Spy";
+
+    try {
+      const response = await fetch("/api/community/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          authorName,
+          result,
+        }),
+      });
+
+      const payload = (await response.json()) as { error?: string; message?: string };
+      if (!response.ok) {
+        throw new Error(payload.error || payload.message || "Failed to share result.");
+      }
+
+      sessionStorage.setItem("bitespy:community:authorName", authorName);
+      setShareSuccess("Shared to community digest.");
+    } catch (error) {
+      setShareError(error instanceof Error ? error.message : "Could not share this report.");
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   const meterPercent = useMemo(() => {
     if (!result) {
@@ -237,11 +285,42 @@ function ResultContent() {
           </Link>
           <button
             type="button"
+            onClick={() => void shareToCommunity()}
+            disabled={isSharing}
+            className="rounded-xl bg-cyan-300 px-6 py-3 font-semibold text-[#08225a] transition hover:scale-[1.02] disabled:opacity-60"
+          >
+            {isSharing ? "Sharing..." : "Share To Community"}
+          </button>
+          <button
+            type="button"
             onClick={() => router.push("/")}
             className="rounded-xl border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
           >
             Scan Another Product
           </button>
+          <Link
+            href="/community"
+            className="rounded-xl border border-cyan-300/40 px-6 py-3 font-semibold text-cyan-100 transition hover:bg-cyan-400/10"
+          >
+            Open Community
+          </Link>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <input
+            value={shareName}
+            onChange={(event) => setShareName(event.target.value)}
+            placeholder="Name to show in community"
+            className="rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm text-white outline-none placeholder:text-blue-200/70"
+          />
+          {shareSuccess ? (
+            <p className="rounded-xl border border-emerald-300/40 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-100">
+              {shareSuccess}
+            </p>
+          ) : null}
+          {shareError ? (
+            <p className="rounded-xl border border-red-300/40 bg-red-400/10 px-4 py-2 text-sm text-red-100">{shareError}</p>
+          ) : null}
         </div>
       </section>
     </main>
