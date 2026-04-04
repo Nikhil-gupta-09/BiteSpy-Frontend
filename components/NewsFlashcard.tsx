@@ -40,70 +40,89 @@ export default function NewsFlashcard({
     .replace(/&gt;/g, ">")
     .replace(/&amp;/g, "&");
 
+  // A helper function to assign different border colors based on category
+  const getCategoryColor = (cat: string) => {
+    const lower = cat.toLowerCase();
+    if (lower.includes("press") || lower.includes("release")) return "border-red-500 text-red-500";
+    if (lower.includes("ir")) return "border-red-500 text-red-500";
+    if (lower.includes("achievement")) return "border-red-500 text-red-500";
+    if (lower.includes("tech") || lower.includes("dev")) return "border-blue-500 text-blue-500";
+    if (lower.includes("business") || lower.includes("industry")) return "border-emerald-500 text-emerald-500";
+    // default
+    return "border-rose-500 text-rose-500";
+  };
+
   return (
     <article
       className="
-        relative flex flex-col justify-between
-        bg-[#DFF5FF] border border-blue-200
-        rounded-2xl p-5
-        transition-all duration-300
-        hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-200/30
-        cursor-pointer
+        bg-white
+        flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8
+        p-5 sm:px-6 sm:py-5 border border-gray-100 shadow-sm
+        hover:shadow-md transition-shadow duration-300
+        rounded-xl
       "
-      onClick={() => setIsExpanded(!isExpanded)}
     >
-      {/* LEFT ACCENT BAR */}
-      <div className="absolute left-0 top-0 h-full w-[3px] bg-blue-500 rounded-l-2xl" />
-
-      {/* TOP META */}
-      <div className="flex items-center justify-between text-xs mb-3">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-blue-700 uppercase tracking-wide">
-            {category}
+      {/* LEFT SECTION: Category & Date */}
+      <div className="flex items-center gap-4 sm:gap-6 shrink-0 sm:w-[260px] md:w-[320px]">
+        {/* Category Box */}
+        <div 
+          className={`
+            flex items-center justify-center 
+            px-3 py-1 
+            border w-28 text-xs font-semibold
+            rounded bg-white
+            ${getCategoryColor(category || 'general')}
+          `}
+        >
+          <span className="truncate w-full text-center">
+            {category || "News"}
           </span>
-          <span className="text-blue-500/70">• {source}</span>
         </div>
-        <span className="text-gray-500 italic">{formattedDate}</span>
+        
+        {/* Date */}
+        <div className="text-gray-500 text-sm font-medium whitespace-nowrap hidden sm:block">
+          {formattedDate}
+        </div>
       </div>
 
-      {/* TITLE */}
-      <h3 className="text-[1.05rem] font-semibold text-[#0B2545] leading-snug mb-2 hover:text-blue-700 transition">
-        {title}
-      </h3>
+      {/* Date for Mobile (appears below category but before title) */}
+      <div className="text-gray-500 text-xs font-medium sm:hidden -mt-2">
+        {formattedDate}
+      </div>
 
-      {/* DESCRIPTION */}
-      <p
-        className={`text-sm text-slate-700 leading-relaxed mb-4 ${
-          isExpanded ? "" : "line-clamp-2"
-        }`}
-      >
-        {cleanDescription}
-      </p>
-
-      {/* ACTION ROW */}
-      <div className="flex items-center justify-between mt-auto pt-3 border-t border-blue-200/60">
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
         
-        {/* EXPAND */}
-        <button
-          className="text-xs text-blue-600 hover:text-blue-800 transition flex items-center gap-1"
-        >
-          {isExpanded ? "Show less" : "Read preview"}
-        </button>
+        {/* Title & Description Column */}
+        <div className="flex-1 flex flex-col justify-center">
+          <h3 className="text-[1.05rem] font-semibold text-slate-800 leading-snug hover:text-blue-600 transition w-full pr-4">
+            {title}
+          </h3>
 
-        {/* LINK */}
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="
-            flex items-center gap-1 text-sm font-medium
-            text-blue-700 hover:text-blue-900
-            transition
-          "
-        >
-          Open <ChevronRight size={16} />
-        </a>
+          <div className="mt-2 border-t border-gray-50 pt-2">
+            <p className="text-sm text-slate-600/80 leading-relaxed line-clamp-2">
+              {cleanDescription || "No additional description available."}
+            </p>
+            <span className="text-xs font-medium text-slate-400 mt-2 block">Source: {source}</span>
+          </div>
+        </div>
+
+        {/* OPEN SOURCE ACTION BUTTON */}
+        <div className="shrink-0 pt-2 sm:pt-0 border-t sm:border-0 border-gray-100 w-full sm:w-auto">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              flex sm:inline-flex items-center justify-center gap-2 px-5 py-2.5
+              bg-blue-600 text-white text-xs font-bold rounded-lg
+              hover:bg-blue-700 transition-all shadow-sm hover:shadow-md
+              w-full sm:w-auto
+            "
+          >
+            Open Source <ExternalLink size={14} />
+          </a>
+        </div>
       </div>
     </article>
   );
