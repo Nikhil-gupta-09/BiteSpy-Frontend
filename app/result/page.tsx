@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
-export default function ResultPage() {
+function ResultContent() {
   const searchParams = useSearchParams();
   const product = searchParams.get("product") ?? "nutella";
   const yesCount = Number(searchParams.get("yes") ?? "0");
@@ -92,5 +92,24 @@ export default function ResultPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function ResultFallback() {
+  return (
+    <main className="min-h-screen pb-16">
+      <Navbar />
+      <section className="mx-auto w-full max-w-5xl px-6 pt-28">
+        <h1 className="text-4xl font-extrabold text-white md:text-5xl">Preparing Reality Report...</h1>
+      </section>
+    </main>
+  );
+}
+
+export default function ResultPage() {
+  return (
+    <Suspense fallback={<ResultFallback />}>
+      <ResultContent />
+    </Suspense>
   );
 }

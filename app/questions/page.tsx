@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
@@ -12,7 +12,7 @@ const QUESTIONS = [
   "Do you care about high fiber in your breakfast spread?",
 ];
 
-export default function QuestionsPage() {
+function QuestionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const product = searchParams.get("product") ?? "nutella";
@@ -83,5 +83,26 @@ export default function QuestionsPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function QuestionsFallback() {
+  return (
+    <main className="min-h-screen">
+      <Navbar />
+      <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 pt-28 pb-16">
+        <div className="rounded-3xl border border-white/20 bg-[#071340]/80 p-8 shadow-2xl backdrop-blur-xl">
+          <p className="text-lg font-semibold text-white">Loading your question set...</p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default function QuestionsPage() {
+  return (
+    <Suspense fallback={<QuestionsFallback />}>
+      <QuestionsContent />
+    </Suspense>
   );
 }
