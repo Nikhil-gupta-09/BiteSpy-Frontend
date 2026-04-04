@@ -284,6 +284,14 @@ export default function ProfilePage() {
                   "Cholesterol",
                   "Heart",
                   "Thyroid",
+                  "Peanut Allergy",
+                  "Tree Nut Allergy",
+                  "Dairy Allergy",
+                  "Gluten Sensitivity",
+                  "Lactose Intolerance",
+                  "Bloating",
+                  "IBS",
+                  "Acid Reflux",
                 ].map((c) => (
                   <button
                     key={c}

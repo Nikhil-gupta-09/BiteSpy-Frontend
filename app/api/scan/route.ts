@@ -48,15 +48,13 @@ async function computeImageHash(base64Data: string): Promise<string> {
 function normalizeQuestions(questions?: GeminiScanShape["questions"]): IngredientQuestion[] {
     if (!questions?.length) {
         return [
-            { id: "q1", text: "Do you avoid added sugars for blood-glucose control?", focus: "health" },
-            { id: "q2", text: "Do you need this product to be nut-free?", focus: "allergy" },
-            { id: "q3", text: "Do you prefer palm-oil-free options?", focus: "preference" },
-            { id: "q4", text: "Are artificial flavors or colors a concern for you?", focus: "health" },
-            { id: "q5", text: "Do you want higher protein or fiber in this category?", focus: "preference" },
+            { id: "q1", text: "Do you have any allergy concern with this product?", focus: "allergy" },
+            { id: "q2", text: "Does this product usually cause bloating or digestion issues for you?", focus: "health" },
+            { id: "q3", text: "Do you want to avoid added sugar or sweeteners here?", focus: "health" },
         ];
     }
 
-    return questions.slice(0, 6).map((q, index) => ({
+    return questions.slice(0, 5).map((q, index) => ({
         id: `q${index + 1}`,
         text: q.text?.trim() || `Question ${index + 1}`,
         focus: q.focus ?? "preference",
@@ -95,8 +93,9 @@ Required JSON shape:
 
 Rules:
 - Infer likely ingredients if not fully visible, but keep conservative wording.
-- Questions must be practical and tied to ingredients, health, allergies, or preference.
-- Create 5 to 6 questions.
+- Questions must be practical and tied to ingredients, health, allergies, bloating, digestion, or preference.
+- Create only 2 to 5 questions.
+- Keep them short, personal, and non-repetitive.
 - Avoid medical diagnosis claims.
 `
             : `
@@ -122,8 +121,9 @@ Required JSON shape:
 
 Rules:
 - If unsure, provide likely/common ingredients for that product type.
-- Questions must still be practical and tied to ingredients, health, allergies, or preference.
-- Create 5 to 6 questions.
+- Questions must still be practical and tied to ingredients, health, allergies, bloating, digestion, or preference.
+- Create only 2 to 5 questions.
+- Keep them short, personal, and non-repetitive.
 - Avoid medical diagnosis claims.
 `;
 

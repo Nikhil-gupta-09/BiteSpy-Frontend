@@ -2,16 +2,96 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FiCheck, FiX } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
 import type { IngredientQuestion, ScanResult, UserAnswer } from "@/lib/claim-analysis";
 
 const FALLBACK_QUESTIONS: IngredientQuestion[] = [
-  { id: "q1", text: "Do you avoid high added sugar products?", focus: "health" },
-  { id: "q2", text: "Do you need allergen-safe options (nuts, dairy, soy)?", focus: "allergy" },
-  { id: "q3", text: "Do you prefer low-processing ingredients?", focus: "preference" },
-  { id: "q4", text: "Is low saturated fat important for your routine?", focus: "health" },
-  { id: "q5", text: "Do you prioritize cleaner label claims?", focus: "preference" },
+  { id: "q1", text: "Do you have any allergy concern with this product?", focus: "allergy" },
+  { id: "q2", text: "Does this usually trigger bloating or digestion issues for you?", focus: "health" },
+  { id: "q3", text: "Do you want to avoid added sugar or sweeteners here?", focus: "health" },
+  { id: "q4", text: "Would you rather skip products with a lot of additives?", focus: "preference" },
+  { id: "q5", text: "Is lower sodium important for your routine?", focus: "health" },
 ];
+
+const QUESTION_POOL: IngredientQuestion[] = [
+  { id: "q1", text: "Do you have any allergy concern with this product?", focus: "allergy" },
+  { id: "q2", text: "Does this usually trigger bloating or digestion issues for you?", focus: "health" },
+  { id: "q3", text: "Do you want to avoid added sugar or sweeteners here?", focus: "health" },
+  { id: "q4", text: "Would you rather skip products with a lot of additives?", focus: "preference" },
+  { id: "q5", text: "Is lower sodium important for your routine?", focus: "health" },
+  { id: "q6", text: "Do you prefer cleaner labels with fewer ingredients?", focus: "preference" },
+  { id: "q7", text: "Do you want a higher protein or fiber option?", focus: "preference" },
+  { id: "q8", text: "Do dairy or gluten limits matter for you?", focus: "allergy" },
+];
+
+const MAX_QUESTIONS = 5;
+const MIN_QUESTIONS = 2;
+
+function normalizeValue(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function buildQuestionSet(baseQuestions: IngredientQuestion[], conditions: string[]) {
+  const normalizedConditions = conditions.map(normalizeValue);
+
+  const shouldSkip = (question: IngredientQuestion) => {
+    const text = normalizeValue(question.text);
+
+    if (normalizedConditions.some((condition) => condition.includes("diabetes") && /sugar|sweetener|glucose|carb|carbohydrate/.test(text))) {
+      return true;
+    }
+
+    if (normalizedConditions.some((condition) => /allergy|intolerance|sensitivity/.test(condition) && /allerg|nut|peanut|tree nut|dairy|gluten|soy|lactose/.test(text))) {
+      return true;
+    }
+
+    if (normalizedConditions.some((condition) => /bloating|ibs|acid reflux|reflux/.test(condition) && /bloating|digestion|gas|stomach|heartburn|reflux|ibs/.test(text))) {
+      return true;
+    }
+
+    return normalizedConditions.some((condition) => condition.includes("thyroid") && /iodine|seaweed|sugar|energy/.test(text));
+  };
+
+  const merged: IngredientQuestion[] = [];
+  const seen = new Set<string>();
+
+  for (const question of baseQuestions) {
+    const key = normalizeValue(question.text);
+    if (!seen.has(key) && !shouldSkip(question)) {
+      merged.push(question);
+      seen.add(key);
+    }
+  }
+
+  for (const question of QUESTION_POOL) {
+    const key = normalizeValue(question.text);
+    if (merged.length >= MAX_QUESTIONS) {
+      break;
+    }
+
+    if (!seen.has(key) && !shouldSkip(question)) {
+      merged.push(question);
+      seen.add(key);
+    }
+  }
+
+  if (merged.length < MIN_QUESTIONS) {
+    for (const question of QUESTION_POOL) {
+      const key = normalizeValue(question.text);
+      if (merged.length >= MIN_QUESTIONS) {
+        break;
+      }
+
+      if (!seen.has(key)) {
+        merged.push(question);
+        seen.add(key);
+      }
+    }
+  }
+
+  return merged.slice(0, MAX_QUESTIONS);
+}
 
 function QuestionsContent() {
   const router = useRouter();
@@ -20,10 +100,51 @@ function QuestionsContent() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scan, setScan] = useState<ScanResult | null>(null);
-  const [questions, setQuestions] = useState<IngredientQuestion[]>(FALLBACK_QUESTIONS);
+  const [baseQuestions, setBaseQuestions] = useState<IngredientQuestion[]>(FALLBACK_QUESTIONS);
+  const [profileConditions, setProfileConditions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Array<boolean | null>>(new Array(FALLBACK_QUESTIONS.length).fill(null));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const questions = useMemo(
+    () => buildQuestionSet(baseQuestions, profileConditions),
+    [baseQuestions, profileConditions]
+  );
+
+  useEffect(() => {
+    setCurrentIndex(0);
+    setAnswers(new Array(questions.length).fill(null));
+  }, [questions]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch("/api/profile");
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await response.json()) as { conditions?: string[] };
+        if (!isMounted) {
+          return;
+        }
+
+        setProfileConditions(Array.isArray(payload.conditions) ? payload.conditions : []);
+      } catch {
+        if (isMounted) {
+          setProfileConditions([]);
+        }
+      }
+    };
+
+    void loadProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -45,8 +166,7 @@ function QuestionsContent() {
 
           const resolved = parsed.questions.length ? parsed.questions : FALLBACK_QUESTIONS;
           setScan(parsed);
-          setQuestions(resolved);
-          setAnswers(new Array(resolved.length).fill(null));
+          setBaseQuestions(resolved);
           setLoading(false);
           return;
         }
@@ -67,8 +187,7 @@ function QuestionsContent() {
         sessionStorage.setItem(`bitespy:scan:${payload.scanId}`, JSON.stringify(payload));
         const resolved = payload.questions.length ? payload.questions : FALLBACK_QUESTIONS;
         setScan(payload);
-        setQuestions(resolved);
-        setAnswers(new Array(resolved.length).fill(null));
+        setBaseQuestions(resolved);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load scan details.");
       } finally {
@@ -148,7 +267,7 @@ function QuestionsContent() {
         <div className="mb-8 rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-md">
           <div className="h-3 rounded-full bg-white/20">
             <div
-              className="h-3 rounded-full bg-gradient-to-r from-emerald-300 to-cyan-300 transition-all duration-300"
+              className="h-3 rounded-full bg-linear-to-r from-emerald-300 to-cyan-300 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -169,23 +288,29 @@ function QuestionsContent() {
             Focus: {questions[currentIndex]?.focus ?? "preference"}
           </p>
 
+          <p className="mt-3 text-sm text-blue-100/80">
+            We skip topics you already listed in your profile, so the questions stay short and relevant.
+          </p>
+
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => chooseAnswer(true)}
-              className="rounded-2xl border-2 border-emerald-300/40 bg-emerald-400/15 px-6 py-6 text-left text-white transition hover:scale-[1.02] hover:bg-emerald-300/20"
+              aria-label="Tick"
+              className="flex min-h-32 flex-col items-center justify-center rounded-2xl border-2 border-emerald-300/40 bg-emerald-400/15 px-6 py-6 text-white transition hover:scale-[1.02] hover:bg-emerald-300/20"
             >
-              <span className="block text-xs uppercase tracking-[0.18em] text-emerald-200">Yes</span>
-              <span className="mt-1 block text-xl font-semibold">Yes, that matters</span>
+              <FiCheck className="text-5xl text-emerald-200" />
+              <span className="mt-3 text-xs uppercase tracking-[0.18em] text-emerald-100">Keep</span>
             </button>
 
             <button
               type="button"
               onClick={() => chooseAnswer(false)}
-              className="rounded-2xl border-2 border-orange-300/40 bg-orange-300/15 px-6 py-6 text-left text-white transition hover:scale-[1.02] hover:bg-orange-300/20"
+              aria-label="Cross"
+              className="flex min-h-32 flex-col items-center justify-center rounded-2xl border-2 border-orange-300/40 bg-orange-300/15 px-6 py-6 text-white transition hover:scale-[1.02] hover:bg-orange-300/20"
             >
-              <span className="block text-xs uppercase tracking-[0.18em] text-orange-100">No</span>
-              <span className="mt-1 block text-xl font-semibold">No, not important now</span>
+              <FiX className="text-5xl text-orange-100" />
+              <span className="mt-3 text-xs uppercase tracking-[0.18em] text-orange-100">Skip</span>
             </button>
           </div>
         </div>
