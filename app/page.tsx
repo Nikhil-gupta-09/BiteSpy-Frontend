@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import NewsCarousel from "@/components/NewsCarousel";
 import ClaimForm from "@/components/ClaimForm";
 import Footer from "@/components/Footer";
 import LiveSessions from "@/components/LiveSessions";
@@ -10,6 +11,7 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <NewsCarousel />
       <ClaimForm />
       <LiveSessions />
       <OurMotivation />
