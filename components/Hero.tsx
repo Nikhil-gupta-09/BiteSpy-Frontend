@@ -12,7 +12,17 @@ export default function Hero() {
       {/* LEFT CONTENT */}
       <div className="z-10 relative">
         <h1 className="text-5xl lg:text-6xl font-semibold leading-tight mb-6">
-          Expose the truth
+          Expose the{" "}
+          <span
+            className="
+              italic font-serif 
+              bg-gradient-to-r from-blue-300 via-cyan-200 to-blue-400 
+              bg-clip-text text-transparent
+              drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]
+            "
+          >
+            truth
+          </span>
           <br />
           behind your food.
         </h1>
@@ -54,7 +64,7 @@ export default function Hero() {
       {/* RIGHT VISUAL */}
       <div className="relative flex justify-center items-center z-10 h-[500px]">
 
-        {/* 🦝 RACCOON (CENTER - SLOW FLOAT) */}
+        {/* 🦝 RACCOON */}
         <motion.div
           className="absolute scale-[2.6]"
           style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.4))" }}
@@ -77,7 +87,7 @@ export default function Hero() {
           />
         </motion.div>
 
-        {/* 🍎 APPLE (RIGHT + LOWER - CLOSER) */}
+        {/* 🍎 APPLE */}
         <motion.div
           className="absolute right-[-10px] bottom-[40px] scale-[1.3]"
           animate={{
@@ -99,7 +109,7 @@ export default function Hero() {
           />
         </motion.div>
 
-        {/* 🔍 SCANNER (LEFT + TOP - CLOSER) */}
+        {/* 🔍 SCANNER */}
         <motion.div
           className="absolute left-[-20px] top-[30px] scale-[2]"
           animate={{
