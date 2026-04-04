@@ -75,6 +75,7 @@ function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scanId = searchParams.get("scanId") ?? "";
+  const historyId = searchParams.get("historyId") ?? "";
   const hasFallbackFlag = searchParams.get("fallback") === "1";
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -88,6 +89,29 @@ function ResultContent() {
     let mounted = true;
 
     const load = async () => {
+      if (historyId) {
+        try {
+          const response = await fetch(`/api/history/${encodeURIComponent(historyId)}`);
+          const payload = (await response.json()) as { history?: { result?: AnalysisResult } };
+
+          if (!response.ok || !payload.history?.result || !isAnalysisResult(payload.history.result)) {
+            throw new Error("Unable to fetch history report");
+          }
+
+          if (mounted) {
+            setResult(payload.history.result);
+            setLoading(false);
+          }
+          return;
+        } catch {
+          if (mounted) {
+            setResult(fallbackResult("history-unavailable"));
+            setLoading(false);
+          }
+          return;
+        }
+      }
+
       if (!scanId) {
         setResult(fallbackResult("no-scan"));
         setLoading(false);
@@ -132,7 +156,7 @@ function ResultContent() {
     return () => {
       mounted = false;
     };
-  }, [scanId]);
+  }, [historyId, scanId]);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("bitespy:community:authorName");

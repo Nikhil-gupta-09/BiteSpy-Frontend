@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Logo } from "./Logo";
-import { FiArrowRight, FiUser, FiLogOut } from "react-icons/fi";
+import { FiArrowRight, FiUser, FiLogOut, FiClock } from "react-icons/fi";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/firebase";
 
@@ -39,6 +39,11 @@ export default function Navbar() {
 
   const handleProfileClick = () => {
     router.push("/profile");
+    setDropdownOpen(false);
+  };
+
+  const handleHistoryClick = () => {
+    router.push("/#upload-section");
     setDropdownOpen(false);
   };
 
@@ -128,6 +133,16 @@ export default function Navbar() {
                       >
                         <FiUser size={16} />
                         View Profile
+                      </button>
+
+                      {/* HISTORY BUTTON */}
+                      <button
+                        onClick={handleHistoryClick}
+                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 
+                        transition-colors duration-200 flex items-center gap-2"
+                      >
+                        <FiClock size={16} />
+                        Search History
                       </button>
 
                       {/* LOGOUT BUTTON */}

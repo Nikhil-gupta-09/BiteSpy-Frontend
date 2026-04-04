@@ -5,6 +5,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import type { ScanResult } from "@/lib/claim-analysis";
+import { PROFILE_EMAIL_STORAGE_KEY } from "@/lib/profile";
+
+interface SearchHistoryItem {
+  id: string;
+  scanId: string;
+  productName: string;
+  claimOMeter: number;
+  verdict: string;
+  source: "image" | "name" | "unknown";
+  createdAt: string;
+}
 
 function toDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -67,6 +78,8 @@ export default function ClaimForm() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState("");
   const [detectedProduct, setDetectedProduct] = useState("");
+  const [history, setHistory] = useState<SearchHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -75,6 +88,45 @@ export default function ClaimForm() {
       }
     };
   }, [previewUrl]);
+
+  useEffect(() => {
+    const email = localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) || "";
+    if (!email.trim()) {
+      setHistory([]);
+      return;
+    }
+
+    let active = true;
+
+    const loadHistory = async () => {
+      setHistoryLoading(true);
+      try {
+        const response = await fetch(`/api/history?email=${encodeURIComponent(email)}&limit=8`);
+        const payload = (await response.json()) as { history?: SearchHistoryItem[] };
+        if (!response.ok) {
+          throw new Error("Could not load search history.");
+        }
+
+        if (active) {
+          setHistory(Array.isArray(payload.history) ? payload.history : []);
+        }
+      } catch {
+        if (active) {
+          setHistory([]);
+        }
+      } finally {
+        if (active) {
+          setHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -148,6 +200,7 @@ export default function ClaimForm() {
       setDetectedProduct(scan.productName);
       sessionStorage.setItem(`bitespy:scan:${scan.scanId}`, JSON.stringify(scan));
       sessionStorage.setItem("bitespy:lastScanId", scan.scanId);
+      sessionStorage.setItem("bitespy:lastScanSource", body.imageDataUrl ? "image" : "name");
       router.push(`/questions?scanId=${encodeURIComponent(scan.scanId)}`);
     } catch (error) {
       setScanError(error instanceof Error ? error.message : "Scan failed. Please try again.");
@@ -357,6 +410,34 @@ export default function ClaimForm() {
                 >
                   {isScanning ? "Analyzing..." : "Use name"}
                 </button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-md">
+              <p className="text-sm font-semibold tracking-[0.08em] text-cyan-100">YOUR RECENT SEARCH HISTORY</p>
+
+              {historyLoading ? <p className="mt-3 text-sm text-blue-100">Loading history...</p> : null}
+
+              {!historyLoading && !history.length ? (
+                <p className="mt-3 text-sm text-blue-100">
+                  No history yet. Login and complete a scan to store searchable history.
+                </p>
+              ) : null}
+
+              <div className="mt-3 space-y-2">
+                {history.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => router.push(`/result?historyId=${encodeURIComponent(item.id)}`)}
+                    className="w-full rounded-xl border border-white/20 bg-[#091842] px-4 py-3 text-left transition hover:border-cyan-300/40 hover:bg-[#0d2258]"
+                  >
+                    <p className="text-sm font-semibold text-white">{item.productName}</p>
+                    <p className="mt-1 text-xs text-cyan-100">
+                      Score {item.claimOMeter}/10 · {item.verdict} · {item.source === "image" ? "Image scan" : "Typed search"}
+                    </p>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
