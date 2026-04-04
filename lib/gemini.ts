@@ -28,6 +28,8 @@ interface GenerateGeminiOptions {
     goal?: string;
 }
 
+const TRANSIENT_RETRY_DELAYS_MS = [800, 1600, 2800];
+
 export class GeminiConfigError extends Error {
     constructor(message: string) {
         super(message);
@@ -102,6 +104,23 @@ function isArmorIQEnabled(): boolean {
     return Boolean(process.env.ARMORIQ_API_KEY && process.env.ARMORIQ_MCP_SERVER_NAME);
 }
 
+function isTransientModelError(message: string): boolean {
+    const normalized = message.toLowerCase();
+    return (
+        normalized.includes("503") ||
+        normalized.includes("unavailable") ||
+        normalized.includes("high demand") ||
+        normalized.includes("resource_exhausted") ||
+        normalized.includes("429")
+    );
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
 function createArmorIQClient(profile: ArmorIQAgentProfile): ArmorIQClient {
     const apiKey = process.env.ARMORIQ_API_KEY;
     const userId = process.env.ARMORIQ_USER_ID || process.env.USER_ID;
@@ -156,16 +175,36 @@ async function generateViaArmorIQ<T>(
         source: "bitespy-backend",
     });
 
-    const token = await client.getIntentToken(captured, policyConfig.policy, 180);
-    const invokeResult = (await client.invoke(mcpServer, action, token, {
-        model: GEMINI_MODEL,
-        prompt,
-        inlineData,
-        generationConfig: {
-            temperature: 0.2,
-            responseMimeType: "application/json",
-        },
-    })) as ArmorIQInvokeResponse;
+    let invokeResult: ArmorIQInvokeResponse | null = null;
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= TRANSIENT_RETRY_DELAYS_MS.length; attempt += 1) {
+        try {
+            const token = await client.getIntentToken(captured, policyConfig.policy, 180);
+            invokeResult = (await client.invoke(mcpServer, action, token, {
+                model: GEMINI_MODEL,
+                prompt,
+                inlineData,
+                generationConfig: {
+                    temperature: 0.2,
+                    responseMimeType: "application/json",
+                },
+            })) as ArmorIQInvokeResponse;
+            break;
+        } catch (error) {
+            lastError = error instanceof Error ? error : new Error(String(error));
+            const canRetry = isTransientModelError(lastError.message) && attempt < TRANSIENT_RETRY_DELAYS_MS.length;
+            if (!canRetry) {
+                throw lastError;
+            }
+
+            await sleep(TRANSIENT_RETRY_DELAYS_MS[attempt]);
+        }
+    }
+
+    if (!invokeResult) {
+        throw lastError ?? new Error("ArmorIQ MCP invocation failed without a response.");
+    }
 
     const rawText = extractTextFromUnknownPayload(invokeResult.result ?? invokeResult.content).trim();
     if (!rawText) {

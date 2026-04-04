@@ -150,10 +150,52 @@ Rules:
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
+        const rawMessage = error instanceof Error ? error.message : "Unknown error";
+        const normalizedMessage = rawMessage.toLowerCase();
+
+        if (
+            normalizedMessage.includes("resource_exhausted") ||
+            normalizedMessage.includes("quota") ||
+            normalizedMessage.includes("429")
+        ) {
+            return NextResponse.json(
+                {
+                    error: "AI quota reached for image analysis.",
+                    message:
+                        "The MCP Gemini key has hit rate/quota limits. Try again in a few minutes or switch MCP GEMINI_API_KEY to a billed/available project.",
+                },
+                { status: 429 }
+            );
+        }
+
+        if (
+            normalizedMessage.includes("503") ||
+            normalizedMessage.includes("unavailable") ||
+            normalizedMessage.includes("high demand")
+        ) {
+            return NextResponse.json(
+                {
+                    error: "AI service temporarily unavailable.",
+                    message: "Model is under high demand right now. Please retry in a few seconds.",
+                },
+                { status: 503 }
+            );
+        }
+
+        if (normalizedMessage.includes("request entity too large") || normalizedMessage.includes("payload too large")) {
+            return NextResponse.json(
+                {
+                    error: "Uploaded image is too large.",
+                    message: "Please upload a smaller image (compressed PNG/JPEG/WEBP).",
+                },
+                { status: 413 }
+            );
+        }
+
         return NextResponse.json(
             {
                 error: "Failed to analyze product image.",
-                message: error instanceof Error ? error.message : "Unknown error",
+                message: rawMessage,
             },
             { status: 500 }
         );

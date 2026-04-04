@@ -136,7 +136,10 @@ export default function ClaimForm() {
       const payload = (await response.json()) as ScanResult | { error?: string; message?: string };
 
       if (!response.ok || !("scanId" in payload)) {
-        const errMessage = "error" in payload && payload.error ? payload.error : "Could not analyze this product.";
+        const errMessage =
+          "error" in payload && (payload.message || payload.error)
+            ? payload.message || payload.error || "Could not analyze this product."
+            : "Could not analyze this product.";
         setScanError(errMessage);
         return;
       }
