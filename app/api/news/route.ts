@@ -38,7 +38,7 @@ const RSS_FEEDS = {
 };
 
 const parser = new Parser({
-    timeout: 10000,
+    timeout: 5000,
     headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
@@ -58,7 +58,7 @@ export async function GET(): Promise<Response> {
 
         const allNews: NewsItem[] = [];
 
-        // Fetch from all feeds in parallel
+        // Fetch from all feeds in parallel with Promise.allSettled for resilience
         const feedPromises = Object.entries(RSS_FEEDS).flatMap(([category, feeds]) =>
             feeds.map(async (feed) => {
                 try {
@@ -76,7 +76,7 @@ export async function GET(): Promise<Response> {
 
                     return newsItems;
                 } catch (error) {
-                    console.error(`Failed to fetch ${feed.name}:`, error);
+                    // Silently fail and return empty array
                     return [];
                 }
             })

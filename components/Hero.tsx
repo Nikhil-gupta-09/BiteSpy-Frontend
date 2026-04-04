@@ -12,7 +12,6 @@ export default function Hero() {
       pt-36 pb-24 
       grid lg:grid-cols-2 gap-12 items-center 
       overflow-hidden text-white
-      bg-gradient-to-br from-[#030f36] via-[#0b3c6f] to-[#2563eb]
       "
     >
       {/* 🔵 BACKGROUND BLOBS (for premium feel) */}
@@ -85,7 +84,11 @@ export default function Hero() {
         {/* 🦝 RACCOON */}
         <motion.div
           className="absolute scale-[2.4] md:scale-[2.6]"
-          style={{ filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.5))" }}
+          style={{
+            filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.5))",
+            width: "auto",
+            height: "auto",
+          }}
           animate={{
             y: [0, -15, 0],
             x: [0, 10, 0],
@@ -102,12 +105,14 @@ export default function Hero() {
             width={280}
             height={280}
             priority
+            style={{ width: "auto", height: "auto" }}
           />
         </motion.div>
 
         {/* 🍎 APPLE */}
         <motion.div
           className="absolute right-[-10px] bottom-[40px] scale-[1.2] md:scale-[1.3]"
+          style={{ width: "auto", height: "auto" }}
           animate={{
             y: [0, -20, 0],
             x: [0, 12, 0],
@@ -124,12 +129,14 @@ export default function Hero() {
             alt="Apple"
             width={140}
             height={140}
+            style={{ width: "auto", height: "auto" }}
           />
         </motion.div>
 
         {/* 🔍 SCANNER */}
         <motion.div
           className="absolute left-[-20px] top-[30px] scale-[1.8] md:scale-[2]"
+          style={{ width: "auto", height: "auto" }}
           animate={{
             y: [0, -18, 0],
             x: [0, -12, 0],
@@ -146,6 +153,7 @@ export default function Hero() {
             alt="Scanner"
             width={140}
             height={140}
+            style={{ width: "auto", height: "auto" }}
           />
         </motion.div>
 
