@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",
+    "date-fns": "^4.1.0",
     "firebase": "^12.11.0",
     "firebase-admin": "^13.7.0",
     "framer-motion": "^12.38.0",
@@ -18,7 +19,8 @@
     "next": "16.2.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-icons": "^5.6.0"
+    "react-icons": "^5.6.0",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
