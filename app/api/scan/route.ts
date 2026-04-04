@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import type { IngredientQuestion, ScanResult } from "@/lib/claim-analysis";
 import { generateGeminiJson, GeminiConfigError } from "@/lib/gemini";
+import { getMongoDb } from "@/lib/mongodb";
+import { normalizeItemKey, type ItemDoc } from "@/lib/items";
 import { getScan, saveScan } from "@/lib/scan-store";
 
 export const runtime = "nodejs";
@@ -36,6 +38,11 @@ function parseDataUrl(imageDataUrl: string): { mimeType: string; data: string } 
         mimeType: match[1],
         data: match[2],
     };
+}
+
+async function computeImageHash(base64Data: string): Promise<string> {
+    const { createHash } = await import("crypto");
+    return createHash("sha256").update(base64Data).digest("hex");
 }
 
 function normalizeQuestions(questions?: GeminiScanShape["questions"]): IngredientQuestion[] {
@@ -121,6 +128,7 @@ Rules:
 `;
 
         const inlineData = hasImage ? parseDataUrl(body.imageDataUrl as string) : undefined;
+        const imageHash = inlineData?.data ? await computeImageHash(inlineData.data) : undefined;
         const gemini = await generateGeminiJson<GeminiScanShape>(prompt, inlineData, {
             profile: "scan-agent",
             action: "scan_product",
@@ -133,6 +141,8 @@ Rules:
             productName: gemini.productName?.trim() || "Unknown product",
             brand: gemini.brand?.trim() || "Unknown brand",
             category: gemini.category?.trim() || "Packaged food",
+            flagged: false,
+            verifiedReports: 0,
             cloudinaryUrl: body.cloudinaryUrl?.trim() || undefined,
             cloudinaryPublicId: body.cloudinaryPublicId?.trim() || undefined,
             ingredients: (gemini.ingredients ?? []).slice(0, 20),
@@ -142,6 +152,65 @@ Rules:
             healthConcerns: (gemini.healthConcerns ?? []).slice(0, 10),
             questions: normalizeQuestions(gemini.questions),
         };
+
+        try {
+            const db = await getMongoDb();
+            const items = db.collection<ItemDoc>("items");
+            await items.createIndex({ key: 1 }, { unique: true });
+            await items.createIndex({ imageHashes: 1 });
+
+            const itemKey = normalizeItemKey(normalized.productName, normalized.brand, normalized.category);
+            const now = new Date();
+            const existingByKey = await items.findOne({ key: itemKey });
+
+            if (existingByKey) {
+                await items.updateOne(
+                    { _id: existingByKey._id },
+                    {
+                        $set: {
+                            productName: normalized.productName,
+                            brand: normalized.brand,
+                            category: normalized.category,
+                            ingredients: normalized.ingredients,
+                            detectedLabels: normalized.detectedLabels,
+                            marketingClaims: normalized.marketingClaims,
+                            allergySignals: normalized.allergySignals,
+                            healthConcerns: normalized.healthConcerns,
+                            questions: normalized.questions,
+                            updatedAt: now,
+                            lastSeenAt: now,
+                        },
+                        ...(imageHash ? { $addToSet: { imageHashes: imageHash } } : {}),
+                    }
+                );
+
+                normalized.itemId = existingByKey._id?.toHexString?.();
+                normalized.verifiedReports = existingByKey.verifiedReports || 0;
+                normalized.flagged = Boolean(existingByKey.flagged);
+            } else {
+                const insert = await items.insertOne({
+                    key: itemKey,
+                    productName: normalized.productName,
+                    brand: normalized.brand,
+                    category: normalized.category,
+                    ingredients: normalized.ingredients,
+                    detectedLabels: normalized.detectedLabels,
+                    marketingClaims: normalized.marketingClaims,
+                    allergySignals: normalized.allergySignals,
+                    healthConcerns: normalized.healthConcerns,
+                    questions: normalized.questions,
+                    verifiedReports: 0,
+                    flagged: false,
+                    imageHashes: imageHash ? [imageHash] : [],
+                    createdAt: now,
+                    updatedAt: now,
+                    lastSeenAt: now,
+                });
+                normalized.itemId = insert.insertedId.toHexString();
+            }
+        } catch {
+            // Non-blocking DB failure: return AI output.
+        }
 
         saveScan(normalized);
         return NextResponse.json(normalized);

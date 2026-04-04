@@ -8,9 +8,12 @@ export interface IngredientQuestion {
 
 export interface ScanResult {
     scanId: string;
+    itemId?: string;
     productName: string;
     brand: string;
     category: string;
+    flagged?: boolean;
+    verifiedReports?: number;
     cloudinaryUrl?: string;
     cloudinaryPublicId?: string;
     ingredients: string[];
@@ -42,7 +45,10 @@ export interface AlternativeProduct {
 
 export interface AnalysisResult {
     scanId: string;
+    itemId?: string;
     productName: string;
+    flagged?: boolean;
+    verifiedReports?: number;
     claimOMeter: number;
     verdict: string;
     personalizedSummary: string;
