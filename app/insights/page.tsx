@@ -1,5 +1,5 @@
 "use client";
-
+import hero1 from "@/public/hero1.png"
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -69,7 +69,7 @@ export default function InsightsPage() {
             </div>
 
             <img 
-              src="/hero.png" 
+              src={hero1.src}
               alt="ByteSpy Insight System Mockup" 
               className="w-full max-w-sm rounded-xl drop-shadow-2xl z-10"
             />

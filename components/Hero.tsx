@@ -16,7 +16,7 @@ export default function Hero() {
           <span
             className="
               italic font-serif 
-              bg-gradient-to-r from-blue-300 via-cyan-200 to-blue-400 
+              bg-gradient-to-r from-blue-300 via-cyan-200 to-blue-200 
               bg-clip-text text-transparent
               drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]
             "
