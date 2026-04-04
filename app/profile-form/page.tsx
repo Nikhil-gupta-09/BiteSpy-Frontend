@@ -97,8 +97,8 @@ export default function ProfilePage() {
         throw new Error(body?.error ?? "Failed to save profile");
       }
 
-      console.log("[profile-form] Success! Redirecting to /profile");
-      router.push("/profile");
+      console.log("[profile-form] Success! Redirecting to /");
+      router.push("/");
     } catch (error) {
       console.error("[profile-form] Error:", error);
       setSubmitError(error instanceof Error ? error.message : "Failed to save profile");
