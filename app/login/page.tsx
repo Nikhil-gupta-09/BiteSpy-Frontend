@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { PROFILE_EMAIL_STORAGE_KEY, normalizeEmail } from "@/lib/profile";
 import { Logo } from "@/components/Logo"; // 👈 ADD THIS
 
 import {
@@ -56,6 +56,14 @@ export default function LoginPage() {
         mode === "email" ? form.email : normalizePhoneToEmail(form.phone);
 
       await signInWithEmailAndPassword(auth, emailToUse, form.password);
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          PROFILE_EMAIL_STORAGE_KEY,
+          normalizeEmail(emailToUse)
+        );
+      }
+
       router.push("/");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
@@ -68,7 +76,10 @@ export default function LoginPage() {
     <div className="flex h-screen w-full overflow-hidden">
 
       {/* LEFT SIDE */}
-      <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto">
+      <div
+        className="w-full h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto"
+        style={{ width: "450px" }}
+      >
 
         <div className="max-w-sm w-full mx-auto">
 
@@ -187,7 +198,8 @@ export default function LoginPage() {
           alt="Login Mascot"
           width={500}
           height={500}
-          className="w-full max-w-[500px] h-auto object-contain"
+          className="w-full h-auto object-contain"
+          style={{ maxWidth: "500px" }}
           priority
           unoptimized
         />

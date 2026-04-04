@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase";
+import { PROFILE_EMAIL_STORAGE_KEY, normalizeEmail } from "@/lib/profile";
 
 import {
   FiEye,
@@ -75,7 +76,14 @@ export default function SignupPage() {
         displayName: `${form.firstName} ${form.lastName}`,
       });
 
-      router.push("/");
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          PROFILE_EMAIL_STORAGE_KEY,
+          normalizeEmail(emailToUse)
+        );
+      }
+
+      router.push("/profile-form");
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError("Signup failed");
@@ -88,7 +96,10 @@ export default function SignupPage() {
     <div className="flex h-screen w-full overflow-hidden">
 
       {/* LEFT SIDE - FORM (TRANSPARENT DARK UI) */}
-      <div className="w-full md:w-[450px] lg:w-[500px] h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto">
+      <div
+        className="w-full h-full bg-transparent p-8 md:p-12 flex flex-col justify-center border-r border-white/10 shrink-0 overflow-y-auto"
+        style={{ width: "450px" }}
+      >
 
         <div className="max-w-sm w-full mx-auto">
 
@@ -254,7 +265,8 @@ export default function SignupPage() {
           alt="Signup Mascot"
           width={500}
           height={500}
-          className="w-full max-w-[500px] h-auto object-contain"
+          className="w-full h-auto object-contain"
+          style={{ maxWidth: "500px" }}
           priority
           unoptimized
         />

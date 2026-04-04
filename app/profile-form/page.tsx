@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/firebase";
+import { PROFILE_EMAIL_STORAGE_KEY } from "@/lib/profile";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
@@ -11,8 +15,12 @@ import {
 } from "lucide-react";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
+  const [email, setEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const [form, setForm] = useState({
     fullName: "",
@@ -25,7 +33,25 @@ export default function ProfilePage() {
     goal: "",
   });
 
-  const handleChange = (e: any) => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const resolvedEmail = user?.email ?? localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY) ?? "";
+
+      console.log("[profile-form] Auth state changed:", { user: user?.email, localStorage: localStorage.getItem(PROFILE_EMAIL_STORAGE_KEY), resolved: resolvedEmail });
+
+      if (resolvedEmail) {
+        localStorage.setItem(PROFILE_EMAIL_STORAGE_KEY, resolvedEmail);
+        setEmail(resolvedEmail);
+        setSubmitError("");
+      } else {
+        setSubmitError("Sign in to continue to your profile.");
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -37,6 +63,48 @@ export default function ProfilePage() {
         ? prev.conditions.filter((c) => c !== condition)
         : [...prev.conditions, condition],
     }));
+  };
+
+  const handleSubmit = async () => {
+    if (!email || !isFinalSectionComplete) {
+      console.warn("[profile-form] Submit blocked:", { email, complete: isFinalSectionComplete });
+      return;
+    }
+
+    setSaving(true);
+    setSubmitError("");
+
+    try {
+      console.log("[profile-form] Posting profile:", { email, form });
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          ...form,
+          age: Number(form.age),
+          height: Number(form.height),
+          weight: Number(form.weight),
+        }),
+      });
+
+      const body = await response.json().catch(() => null);
+      console.log("[profile-form] POST response:", { status: response.status, body });
+
+      if (!response.ok) {
+        throw new Error(body?.error ?? "Failed to save profile");
+      }
+
+      console.log("[profile-form] Success! Redirecting to /profile");
+      router.push("/profile");
+    } catch (error) {
+      console.error("[profile-form] Error:", error);
+      setSubmitError(error instanceof Error ? error.message : "Failed to save profile");
+    } finally {
+      setSaving(false);
+    }
   };
 
   // ✅ VALIDATION
@@ -92,7 +160,10 @@ export default function ProfilePage() {
     <div className="flex h-screen w-full overflow-hidden">
 
       {/* LEFT */}
-      <div className="w-full md:w-[520px] h-full px-8 py-10 flex flex-col justify-center border-r border-white/10">
+      <div
+        className="w-full h-full px-8 py-10 flex flex-col justify-center border-r border-white/10"
+        style={{ width: "520px" }}
+      >
 
         <div className="max-w-md w-full mx-auto">
 
@@ -104,6 +175,11 @@ export default function ProfilePage() {
             <p className="text-blue-200 text-sm mt-1">
               Step {step} of 3
             </p>
+            {submitError && (
+              <p className="mt-3 rounded-md border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {submitError}
+              </p>
+            )}
           </div>
 
           <AnimatePresence mode="wait" custom={direction}>
@@ -267,15 +343,15 @@ export default function ProfilePage() {
                   </button>
 
                   <button
-                    onClick={() => console.log(form)}
-                    disabled={!isFinalSectionComplete}
+                    onClick={() => void handleSubmit()}
+                    disabled={!isFinalSectionComplete || saving || !email}
                     className={`px-6 py-2 rounded-full font-medium ${
-                      isFinalSectionComplete
+                      isFinalSectionComplete && !saving && email
                         ? "bg-white text-[#030f36]"
                         : "bg-white/40 text-[#030f36] cursor-not-allowed"
                     }`}
                   >
-                    Finish
+                    {saving ? "Saving..." : "Finish"}
                   </button>
                 </div>
               </motion.div>
