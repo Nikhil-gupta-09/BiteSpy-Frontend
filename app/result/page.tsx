@@ -15,6 +15,8 @@ function fallbackResult(scanId: string): AnalysisResult {
   return {
     scanId,
     productName: "Scanned Product",
+    flagged: false,
+    verifiedReports: 0,
     claimOMeter: 5,
     verdict: "Mixed trust profile",
     personalizedSummary:
@@ -82,8 +84,10 @@ function ResultContent() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
+  const [isReporting, setIsReporting] = useState(false);
   const [shareError, setShareError] = useState("");
   const [shareSuccess, setShareSuccess] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -191,6 +195,46 @@ function ResultContent() {
     }
   };
 
+  const reportItem = async () => {
+    if (!result?.itemId || isReporting) {
+      return;
+    }
+
+    setIsReporting(true);
+    setReportMessage("");
+
+    try {
+      const response = await fetch("/api/items/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ itemId: result.itemId }),
+      });
+
+      const payload = (await response.json()) as { verifiedReports?: number; flagged?: boolean; error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error || "Could not report this item.");
+      }
+
+      setResult((prev) =>
+        prev
+          ? {
+              ...prev,
+              verifiedReports: payload.verifiedReports ?? prev.verifiedReports,
+              flagged: Boolean(payload.flagged),
+            }
+          : prev
+      );
+
+      setReportMessage("Report submitted.");
+    } catch (error) {
+      setReportMessage(error instanceof Error ? error.message : "Could not report item.");
+    } finally {
+      setIsReporting(false);
+    }
+  };
+
   const meterPercent = useMemo(() => {
     if (!result) {
       return 0;
@@ -220,6 +264,12 @@ function ResultContent() {
         {hasFallbackFlag ? (
           <p className="mt-3 rounded-xl border border-amber-300/40 bg-amber-400/10 px-4 py-2 text-sm text-amber-100">
             Showing fallback data because live Gemini analysis could not complete in time.
+          </p>
+        ) : null}
+
+        {result.flagged ? (
+          <p className="mt-3 rounded-xl border border-red-300/40 bg-red-400/10 px-4 py-2 text-sm font-semibold text-red-100">
+            Flagged item warning: This product has been reported multiple times ({result.verifiedReports || 0} reports).
           </p>
         ) : null}
 
@@ -317,6 +367,16 @@ function ResultContent() {
           >
             Open Community
           </Link>
+          {result.itemId ? (
+            <button
+              type="button"
+              onClick={() => void reportItem()}
+              disabled={isReporting}
+              className="rounded-xl border border-red-300/40 px-6 py-3 font-semibold text-red-100 transition hover:bg-red-400/10 disabled:opacity-60"
+            >
+              {isReporting ? "Reporting..." : "Report Item"}
+            </button>
+          ) : null}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -327,6 +387,9 @@ function ResultContent() {
           ) : null}
           {shareError ? (
             <p className="rounded-xl border border-red-300/40 bg-red-400/10 px-4 py-2 text-sm text-red-100">{shareError}</p>
+          ) : null}
+          {reportMessage ? (
+            <p className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white">{reportMessage}</p>
           ) : null}
         </div>
       </section>

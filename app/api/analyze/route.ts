@@ -92,7 +92,10 @@ ${JSON.stringify(answers, null, 2)}
 
         const result: AnalysisResult = {
             scanId,
+            itemId: scan.itemId,
             productName: scan.productName,
+            flagged: Boolean(scan.flagged),
+            verifiedReports: scan.verifiedReports || 0,
             claimOMeter: clampScore(gemini.claimOMeter ?? 5),
             verdict: gemini.verdict?.trim() || "Mixed reliability claims.",
             personalizedSummary:
