@@ -5,10 +5,10 @@ import { FiUsers, FiAlertTriangle, FiShield } from "react-icons/fi";
 
 export default function OurMotivation() {
   return (
-    <section className="py-24 px-6 md:px-12 w-full text-white relative flex justify-center items-center overflow-hidden">
+    <section className="py-24 px-6 md:px-12 w-full text-white relative flex justify-center items-center overflow-hidden bg-[#0b1d35]">
       {/* Background decorations */}
-      <div className="absolute w-[500px] h-[500px] bg-cyan-500/10 blur-[150px] rounded-full top-[-100px] left-[-200px] pointer-events-none" />
-      <div className="absolute w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full bottom-[-100px] right-[-100px] pointer-events-none" />
+      <div className="absolute w-[500px] h-[500px] bg-sky-400/12 blur-[150px] rounded-full top-[-100px] left-[-200px] pointer-events-none" />
+      <div className="absolute w-[400px] h-[400px] bg-blue-300/12 blur-[120px] rounded-full bottom-[-100px] right-[-100px] pointer-events-none" />
 
       <div className="max-w-[1300px] w-full relative z-10 grid lg:grid-cols-[1.1fr_0.9fr] gap-16 lg:gap-24 items-center">
         {/* Left Content */}
@@ -23,16 +23,16 @@ export default function OurMotivation() {
             <span
               className="
                 italic font-serif 
-                bg-gradient-to-r from-blue-300 via-cyan-200 to-blue-200 
+                bg-gradient-to-r from-sky-200 via-cyan-100 to-blue-100 
                 bg-clip-text text-transparent
-                drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]
+                drop-shadow-[0_0_10px_rgba(96,165,250,0.35)]
               "
             >
               Motivation
             </span>
           </h2>
           
-          <div className="space-y-6 text-lg md:text-xl text-blue-100/90 leading-relaxed font-medium">
+          <div className="space-y-6 text-lg md:text-xl text-slate-200 leading-relaxed font-medium">
             <p>
               Harmful ingredients in consumable products like food and baby care items are linked to chronic diseases in children through various exposures. Children are especially vulnerable due to their developing bodies and higher relative intake.
             </p>
@@ -40,11 +40,11 @@ export default function OurMotivation() {
               Artificial sweeteners, preservatives like sodium benzoate, and colorants such as tartrazine in processed foods can trigger asthma, allergies, and ADHD-like symptoms. Nitrates/nitrites in meats raise risks for methemoglobinemia and potential cancers.
             </p>
             
-            <div className="p-6 md:p-8 mt-10 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md shadow-2xl relative">
+            <div className="p-6 md:p-8 mt-10 bg-white/8 border border-white/10 rounded-3xl backdrop-blur-md shadow-2xl relative">
               <p className="text-white text-xl leading-relaxed font-medium mb-6">
                 "Because of false claims and misinformation, it is the public that suffers. Our aim is to build a community platform that helps people get closer to the truth."
               </p>
-              <div className="flex items-center gap-3 text-cyan-300 font-bold uppercase tracking-widest text-sm">
+              <div className="flex items-center gap-3 text-cyan-200 font-bold uppercase tracking-widest text-sm">
                 <FiUsers className="w-5 h-5" /> The BiteSpy Mission
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function OurMotivation() {
           className="relative"
         >
           {/* Aesthetic glow behind the card */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-600/20 to-blue-500/20 rounded-3xl blur-[80px] transform rotate-3 scale-110" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-sky-300/18 to-blue-300/18 rounded-3xl blur-[80px] transform rotate-3 scale-110" />
           
           {/* Mockup News Card */}
           <div className="relative bg-white text-slate-900 rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 transform hover:-translate-y-2 transition duration-500">

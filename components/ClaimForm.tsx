@@ -275,7 +275,7 @@ export default function ClaimForm() {
               className="
               absolute inset-0 rounded-[2.5rem]
               bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30
-              blur-xl opacity-70
+              blur-lg opacity-40
               group-hover:opacity-100 transition
             "
             />
@@ -289,7 +289,7 @@ export default function ClaimForm() {
                   px-10 py-14 text-center
                   border border-dashed border-white/20
                   rounded-[2rem]
-                  bg-slate-900/60 backdrop-blur-xl shadow-2xl
+                  bg-slate-900/60 backdrop-blur-xl shadow-[0_18px_40px_rgba(0,0,0,0.18)]
                   hover:border-emerald-400/50
                   transition-all duration-300
                   cursor-pointer
@@ -302,7 +302,7 @@ export default function ClaimForm() {
                     bg-gradient-to-br from-emerald-400 to-cyan-500
                     text-white
                     flex items-center justify-center mb-6
-                    shadow-[0_0_30px_rgba(16,185,129,0.4)]
+                    shadow-[0_0_16px_rgba(16,185,129,0.25)]
                     group-hover:-translate-y-2
                     transition
                   "
@@ -458,7 +458,7 @@ export default function ClaimForm() {
               height={520}
               className="
                 object-contain relative z-10
-                drop-shadow-[0_30px_80px_rgba(0,0,0,0.6)]
+                drop-shadow-[0_18px_45px_rgba(0,0,0,0.35)]
                 hover:-translate-y-4 transition duration-500
               "
             />

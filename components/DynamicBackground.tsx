@@ -136,12 +136,12 @@ function Particles() {
 
 export default function DynamicBackground() {
   return (
-    <div className="fixed inset-0 -z-10 bg-linear-to-br from-black via-[#0a1428] to-[#0f1823]">
+    <div className="fixed inset-0 -z-10 bg-linear-to-br from-[#07111f] via-[#0b1d35] to-[#123465]">
       <Canvas camera={{ position: [0, 0, 25] }}>
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={0.3} color="#1e40af" />
-        <pointLight position={[-10, -10, 10]} intensity={0.2} color="#164e63" />
-        <pointLight position={[0, 0, -15]} intensity={0.15} color="#0c4a6e" />
+        <ambientLight intensity={0.28} />
+        <pointLight position={[10, 10, 10]} intensity={0.24} color="#60a5fa" />
+        <pointLight position={[-10, -10, 10]} intensity={0.18} color="#38bdf8" />
+        <pointLight position={[0, 0, -15]} intensity={0.14} color="#93c5fd" />
 
         <AnimatedShapes />
         <Particles />

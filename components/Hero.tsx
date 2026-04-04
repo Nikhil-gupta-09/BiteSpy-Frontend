@@ -15,8 +15,8 @@ export default function Hero() {
       "
     >
       {/* 🔵 BACKGROUND BLOBS (for premium feel) */}
-      <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-blue-500/20 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-80px] w-[350px] h-[350px] bg-cyan-400/20 blur-3xl rounded-full" />
+      <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-sky-400/18 blur-3xl rounded-full" />
+      <div className="absolute bottom-[-120px] right-[-80px] w-[350px] h-[350px] bg-cyan-300/18 blur-3xl rounded-full" />
 
       {/* LEFT CONTENT */}
       <div className="relative z-10 max-w-xl">
@@ -25,9 +25,9 @@ export default function Hero() {
           <span
             className="
               italic font-serif 
-              bg-gradient-to-r from-blue-300 via-cyan-200 to-blue-200 
+              bg-gradient-to-r from-sky-200 via-cyan-100 to-blue-100 
               bg-clip-text text-transparent
-              drop-shadow-[0_0_14px_rgba(59,130,246,0.6)]
+              drop-shadow-[0_0_12px_rgba(96,165,250,0.45)]
             "
           >
             truth
@@ -36,7 +36,7 @@ export default function Hero() {
           behind your food.
         </h1>
 
-        <p className="text-blue-100/90 mb-8 text-lg leading-relaxed">
+        <p className="text-blue-50/85 mb-8 text-lg leading-relaxed">
           BiteSpy uses AI to uncover hidden ingredients, fake health claims,
           and misleading labels — giving you a clear, honest breakdown of
           what you're really consuming.
@@ -54,7 +54,7 @@ export default function Hero() {
               px-6 py-3 rounded-xl font-medium 
               bg-white text-[#030f36]
               hover:bg-slate-100
-              shadow-xl shadow-black/30
+              shadow-xl shadow-sky-900/20
               hover:scale-[1.05] active:scale-[0.95] 
               transition-all duration-300
             "
@@ -66,10 +66,10 @@ export default function Hero() {
             href="/insights"
             className="
               px-6 py-3 rounded-xl 
-              bg-white/10 border border-white/20 
-              text-blue-100 
+              bg-white/12 border border-white/20 
+              text-blue-50 
               backdrop-blur-md
-              hover:bg-white/20 
+              hover:bg-white/18 
               transition-all duration-300
             "
           >
@@ -85,7 +85,7 @@ export default function Hero() {
         <motion.div
           className="absolute scale-[2.4] md:scale-[2.6]"
           style={{
-            filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.5))",
+            filter: "drop-shadow(0 22px 42px rgba(2,8,23,0.38))",
             width: "auto",
             height: "auto",
           }}
@@ -158,7 +158,7 @@ export default function Hero() {
         </motion.div>
 
         {/* 🔵 SOFT GLOW BEHIND */}
-        <div className="absolute w-[300px] h-[300px] bg-blue-400/20 blur-3xl rounded-full -z-10" />
+        <div className="absolute w-[300px] h-[300px] bg-sky-300/18 blur-3xl rounded-full -z-10" />
       </div>
     </section>
   );

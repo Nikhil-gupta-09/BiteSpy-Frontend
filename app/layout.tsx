@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={dmSans.variable}>
-      <body className="min-h-screen font-sans antialiased text-white overflow-x-hidden bg-black">
+      <body className="min-h-screen font-sans antialiased text-white overflow-x-hidden bg-[#081427]">
         
         {/* 🔥 3JS BACKGROUND */}
         <DynamicBackground />
