@@ -164,16 +164,25 @@ export default function NewsCarousel() {
             <motion.div
               key={startIndex}
               custom={direction}
-              initial={(currentDirection) => ({
-                x: currentDirection > 0 ? 48 : -48,
-                opacity: 0,
-              })}
-              animate={{ x: 0, opacity: 1 }}
-              exit={(currentDirection) => ({
-                x: currentDirection > 0 ? -48 : 48,
-                opacity: 0,
-              })}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              variants={{
+                initial: (currentDirection: number) => ({
+                  x: currentDirection > 0 ? 48 : -48,
+                  opacity: 0,
+                }),
+                animate: {
+                  x: 0, 
+                  opacity: 1,
+                  transition: { duration: 0.3, ease: "easeInOut" }
+                },
+                exit: (currentDirection: number) => ({
+                  x: currentDirection > 0 ? -48 : 48,
+                  opacity: 0,
+                  transition: { duration: 0.3, ease: "easeInOut" }
+                })
+              }}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="flex flex-row gap-4"
             >
               {visibleNews.map((item) => (

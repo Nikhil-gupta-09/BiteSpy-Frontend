@@ -91,9 +91,16 @@ export default function NewsFeed() {
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-6 mb-8">
-        <h2 className="text-2xl font-semibold text-white tracking-tight">
-          Live Feed
-        </h2>
+        <div className="flex items-center gap-3">
+          {/* Pulsing "Live" indicator */}
+          <span className="relative flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+          </span>
+          <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-md">
+            Live Feed
+          </h2>
+        </div>
 
         <button
           onClick={fetchNews}
@@ -117,7 +124,7 @@ export default function NewsFeed() {
 
       {/* LIST (1 CARD PER ROW) */}
       {currentNews.length > 0 ? (
-        <div className="px-6 flex flex-col gap-6">
+        <div className="px-6 flex flex-col gap-4">
           {currentNews.map((item) => (
             <NewsFlashcard key={item.id} {...item} />
           ))}
