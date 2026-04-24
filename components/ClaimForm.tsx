@@ -256,15 +256,15 @@ export default function ClaimForm() {
       overflow-hidden
     "
     >
-      <div className="absolute w-[500px] h-[500px] bg-blue-500/20 blur-[120px] top-[-100px] left-[-100px]" />
-      <div className="absolute w-[400px] h-[400px] bg-cyan-500/20 blur-[120px] bottom-[-100px] right-[-100px]" />
+      <div className="absolute w-[500px] h-[500px] bg-blue-600/12 blur-[130px] top-[-100px] left-[-100px]" />
+      <div className="absolute w-[400px] h-[400px] bg-sky-500/10 blur-[130px] bottom-[-100px] right-[-100px]" />
 
       <div className="relative w-full max-w-[1300px]">
         <div className="text-center max-w-2xl mx-auto mb-24">
           <h2 className="text-5xl font-extrabold tracking-tight text-white">
             Know what is really inside your food
           </h2>
-          <p className="text-slate-200 mt-4 text-lg">
+          <p className="text-blue-100/70 mt-4 text-lg">
             Upload once, answer 5 quick yes/no questions, get your truth score.
           </p>
         </div>
@@ -274,7 +274,7 @@ export default function ClaimForm() {
             <div
               className="
               absolute inset-0 rounded-[2.5rem]
-              bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30
+              bg-gradient-to-r from-blue-600/25 via-sky-500/25 to-cyan-500/25
               blur-lg opacity-40
               group-hover:opacity-100 transition
             "
@@ -289,8 +289,8 @@ export default function ClaimForm() {
                   px-10 py-14 text-center
                   border border-dashed border-white/20
                   rounded-[2rem]
-                  bg-slate-900/60 backdrop-blur-xl shadow-[0_18px_40px_rgba(0,0,0,0.18)]
-                  hover:border-emerald-400/50
+                  bg-[#0D1F40]/70 backdrop-blur-xl shadow-[0_18px_40px_rgba(0,0,0,0.25)]
+                  hover:border-blue-400/40
                   transition-all duration-300
                   cursor-pointer
                 "
@@ -299,10 +299,10 @@ export default function ClaimForm() {
                   <div
                     className="
                     w-20 h-20 rounded-2xl
-                    bg-gradient-to-br from-emerald-400 to-cyan-500
+                    bg-gradient-to-br from-blue-500 to-sky-500
                     text-white
                     flex items-center justify-center mb-6
-                    shadow-[0_0_16px_rgba(16,185,129,0.25)]
+                    shadow-[0_0_18px_rgba(59,130,246,0.30)]
                     group-hover:-translate-y-2
                     transition
                   "
@@ -311,7 +311,7 @@ export default function ClaimForm() {
                   </div>
 
                   <p className="text-xl font-semibold text-white">Upload product label</p>
-                  <p className="text-sm text-slate-300 mt-2">
+                  <p className="text-sm text-blue-100/70 mt-2">
                     Gemini will detect product, ingredients, and likely claim labels.
                   </p>
 
@@ -400,21 +400,21 @@ export default function ClaimForm() {
                   value={typedProductName}
                   onChange={(event) => setTypedProductName(event.target.value)}
                   placeholder="e.g. Nutella, Maggi Noodles, Oreo"
-                  className="w-full rounded-xl border border-white/20 bg-[#091842] px-4 py-3 text-white outline-none placeholder:text-slate-300 focus:border-cyan-300"
+                  className="w-full rounded-xl border border-white/15 bg-[#0a1e42] px-4 py-3 text-white outline-none placeholder:text-blue-300/50 focus:border-blue-400/60 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={goToQuestionsByName}
                   disabled={!typedProductName.trim() || isScanning}
-                  className="rounded-xl border border-cyan-200/40 bg-cyan-400/15 px-5 py-3 font-semibold text-white transition hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl border border-blue-400/30 bg-blue-500/15 px-5 py-3 font-semibold text-white transition hover:bg-blue-400/25 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isScanning ? "Analyzing..." : "Use name"}
                 </button>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-md">
-              <p className="text-sm font-semibold tracking-[0.08em] text-cyan-100">YOUR RECENT SEARCH HISTORY</p>
+            <div className="rounded-2xl border border-white/12 bg-white/5 p-5 backdrop-blur-md">
+              <p className="text-sm font-semibold tracking-[0.08em] text-sky-300">YOUR RECENT SEARCH HISTORY</p>
 
               {historyLoading ? <p className="mt-3 text-sm text-blue-100">Loading history...</p> : null}
 
@@ -430,10 +430,10 @@ export default function ClaimForm() {
                     key={item.id}
                     type="button"
                     onClick={() => router.push(`/result?historyId=${encodeURIComponent(item.id)}`)}
-                    className="w-full rounded-xl border border-white/20 bg-[#091842] px-4 py-3 text-left transition hover:border-cyan-300/40 hover:bg-[#0d2258]"
+                    className="w-full rounded-xl border border-white/12 bg-[#0a1e42] px-4 py-3 text-left transition hover:border-blue-400/35 hover:bg-[#0d2258]"
                   >
                     <p className="text-sm font-semibold text-white">{item.productName}</p>
-                    <p className="mt-1 text-xs text-cyan-100">
+                    <p className="mt-1 text-xs text-sky-300/80">
                       Score {item.claimOMeter}/10 · {item.verdict} · {item.source === "image" ? "Image scan" : "Typed search"}
                     </p>
                   </button>

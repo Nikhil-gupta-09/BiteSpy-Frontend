@@ -94,14 +94,17 @@ export default function NewsCarousel() {
   return (
     <section className="px-6 py-10">
       <div className="mb-5 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold text-white sm:text-2xl">News Flash</h2>
+        <h2 className="text-xl font-bold text-white sm:text-2xl">News Flash</h2>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={goPrev}
             disabled={!canGoPrev}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full
+              border border-white/20 text-white bg-white/5 transition
+              hover:bg-white/12 hover:border-white/35
+              disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Previous cards"
           >
             <ChevronLeft size={18} />
@@ -111,7 +114,9 @@ export default function NewsCarousel() {
             <button
               type="button"
               onClick={goNext}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-white/20 px-4 text-sm font-medium text-white transition hover:bg-white/10"
+              className="inline-flex h-10 items-center gap-2 rounded-full
+                border border-white/20 bg-white/5 px-4 text-sm font-medium text-white
+                transition hover:bg-white/12 hover:border-white/35"
               aria-label="Next cards"
             >
               Next
@@ -120,7 +125,10 @@ export default function NewsCarousel() {
           ) : (
             <Link
               href="/news"
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-[#0B2545] transition hover:bg-blue-50"
+              className="inline-flex h-10 items-center gap-2 rounded-full
+                bg-gradient-to-r from-blue-600 to-blue-500
+                px-4 text-sm font-semibold text-white
+                transition hover:from-blue-500 hover:to-sky-500 shadow-md shadow-blue-900/40"
             >
               More news
               <ArrowRight size={16} />
@@ -130,30 +138,30 @@ export default function NewsCarousel() {
       </div>
 
       {loading && !hasNews ? (
-        <div className="flex min-h-44 items-center justify-center rounded-2xl border border-white/15 text-blue-100">
+        <div className="flex min-h-44 items-center justify-center rounded-2xl border border-white/12 bg-white/4 text-blue-200">
           <div className="flex items-center gap-2 text-sm">
             <Loader2 size={16} className="animate-spin" />
             Loading news cards...
           </div>
         </div>
       ) : error && !hasNews ? (
-        <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-white/15 px-4 text-center text-blue-100">
+        <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 text-center text-blue-200">
           <p className="text-sm">{error}</p>
           <button
             type="button"
             onClick={fetchNews}
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0B2545]"
+            className="rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-semibold text-white hover:from-blue-500 hover:to-sky-500 transition"
           >
             Retry
           </button>
         </div>
       ) : !hasNews ? (
-        <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-white/15 px-4 text-center text-blue-100">
+        <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-white/12 bg-white/4 px-4 text-center text-blue-200">
           <p className="text-sm">No news available right now.</p>
           <button
             type="button"
             onClick={fetchNews}
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0B2545]"
+            className="rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-semibold text-white hover:from-blue-500 hover:to-sky-500 transition"
           >
             Refresh
           </button>
@@ -170,7 +178,7 @@ export default function NewsCarousel() {
                   opacity: 0,
                 }),
                 animate: {
-                  x: 0, 
+                  x: 0,
                   opacity: 1,
                   transition: { duration: 0.3, ease: "easeInOut" }
                 },
@@ -188,18 +196,21 @@ export default function NewsCarousel() {
               {visibleNews.map((item) => (
                 <article
                   key={item.id}
-                  className="flex min-w-0 flex-1 flex-col rounded-2xl border border-[#e6dcc9] bg-[#f7f1e4] p-4"
+                  className="flex min-w-0 flex-1 flex-col rounded-2xl
+                    border border-white/12 bg-[#0D1F40]/80 backdrop-blur-sm p-4
+                    hover:border-blue-400/35 hover:bg-[#0F2347]/90
+                    transition-all duration-300"
                 >
-                  <div className="mb-2 flex items-center justify-between gap-2 text-xs text-[#5f5548]">
-                    <span className="truncate">{item.source}</span>
+                  <div className="mb-2 flex items-center justify-between gap-2 text-xs text-blue-300/70">
+                    <span className="truncate font-medium">{item.source}</span>
                     <span className="shrink-0">{formatPublishedAt(item.pubDate)}</span>
                   </div>
 
-                  <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-[#2f2921] sm:text-base">
+                  <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-white sm:text-base">
                     {item.title}
                   </h3>
 
-                  <p className="mb-4 line-clamp-4 text-xs leading-5 text-[#4c4338] sm:text-sm">
+                  <p className="mb-4 line-clamp-4 text-xs leading-5 text-blue-100/70 sm:text-sm">
                     {cleanDescription(item.description)}
                   </p>
 
@@ -207,7 +218,7 @@ export default function NewsCarousel() {
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-[#7a4e1f] hover:text-[#4e3314]"
+                    className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
                   >
                     Open
                     <ArrowRight size={14} />

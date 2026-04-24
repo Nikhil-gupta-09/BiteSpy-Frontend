@@ -75,9 +75,14 @@ export default function Navbar() {
 
   return (
     <nav
-      className="absolute top-0 left-0 w-full z-50 
-      border-b border-none
-      backdrop-blur-md "
+      className="absolute top-0 left-0 w-full z-50"
+      style={{
+        background: "rgba(6, 14, 31, 0.55)",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        borderBottom: "1px solid rgba(59, 130, 246, 0.18)",
+        boxShadow: "0 2px 24px rgba(6, 14, 31, 0.30)",
+      }}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
 
@@ -92,10 +97,10 @@ export default function Navbar() {
           {/* INSIGHTS */}
           <Link
             href="/insights"
-            className="relative text-sm font-medium text-blue-100 
+            className="relative text-sm font-medium text-blue-100
             transition-all duration-300
-            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] 
-            after:bg-white after:transition-all after:duration-300
+            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px]
+            after:bg-blue-400 after:transition-all after:duration-300
             hover:text-white hover:after:w-full"
           >
             BiteSpy Insight
@@ -104,10 +109,10 @@ export default function Navbar() {
           {/* NEWS */}
           <Link
             href="/news"
-            className="relative text-sm font-medium text-blue-100 
+            className="relative text-sm font-medium text-blue-100
             transition-all duration-300
-            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] 
-            after:bg-white after:transition-all after:duration-300
+            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px]
+            after:bg-blue-400 after:transition-all after:duration-300
             hover:text-white hover:after:w-full"
           >
             News
@@ -115,10 +120,10 @@ export default function Navbar() {
 
           <Link
             href="/community"
-            className="relative text-sm font-medium text-blue-100 
+            className="relative text-sm font-medium text-blue-100
             transition-all duration-300
-            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] 
-            after:bg-white after:transition-all after:duration-300
+            after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px]
+            after:bg-blue-400 after:transition-all after:duration-300
             hover:text-white hover:after:w-full"
           >
             Community
@@ -132,8 +137,8 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full 
-                    bg-white/10 border border-white/20 text-white hover:bg-white/20 
+                    className="flex items-center justify-center w-10 h-10 rounded-full
+                    bg-white/10 border border-white/20 text-white hover:bg-white/20
                     transition-all duration-300"
                     title={user.email}
                   >
@@ -142,19 +147,20 @@ export default function Navbar() {
 
                   {/* DROPDOWN MENU */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-[#030f36] border border-white/20 
-                    rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                      
+                    <div className="absolute right-0 mt-2 w-52 border border-white/15
+                    rounded-xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+                      style={{ background: "rgba(8, 20, 39, 0.97)", backdropFilter: "blur(20px)" }}
+                    >
                       {/* EMAIL DISPLAY */}
                       <div className="px-4 py-3 border-b border-white/10">
-                        <p className="text-xs text-gray-400">Logged in as</p>
+                        <p className="text-xs text-blue-300/70">Logged in as</p>
                         <p className="text-sm font-medium text-white truncate">{user.email}</p>
                       </div>
 
                       {/* PROFILE BUTTON */}
                       <button
                         onClick={handleProfileClick}
-                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 
+                        className="w-full text-left px-4 py-3 text-sm text-blue-100 hover:bg-white/8
                         transition-colors duration-200 flex items-center gap-2"
                       >
                         <FiUser size={16} />
@@ -164,7 +170,7 @@ export default function Navbar() {
                       {/* HISTORY BUTTON */}
                       <button
                         onClick={handleHistoryClick}
-                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 
+                        className="w-full text-left px-4 py-3 text-sm text-blue-100 hover:bg-white/8
                         transition-colors duration-200 flex items-center gap-2"
                       >
                         <FiClock size={16} />
@@ -174,7 +180,7 @@ export default function Navbar() {
                       {user.verified ? (
                         <button
                           onClick={handlePostClick}
-                          className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 
+                          className="w-full text-left px-4 py-3 text-sm text-blue-100 hover:bg-white/8
                           transition-colors duration-200 flex items-center gap-2"
                         >
                           <FiEdit3 size={16} />
@@ -185,7 +191,7 @@ export default function Navbar() {
                       {/* LOGOUT BUTTON */}
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 
+                        className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10
                         transition-colors duration-200 flex items-center gap-2 border-t border-white/10"
                       >
                         <FiLogOut size={16} />
@@ -200,10 +206,10 @@ export default function Navbar() {
                   {/* LOGIN */}
                   <Link
                     href="/login"
-                    className="relative text-sm font-medium text-blue-100 
+                    className="relative text-sm font-medium text-blue-100
                     transition-all duration-300
-                    after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] 
-                    after:bg-white after:transition-all after:duration-300
+                    after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px]
+                    after:bg-blue-400 after:transition-all after:duration-300
                     hover:text-white hover:after:w-full"
                   >
                     Login
@@ -212,13 +218,16 @@ export default function Navbar() {
                   {/* GET STARTED (SIGNUP) */}
                   <Link href="/signup">
                     <button
-                      className="group relative flex items-center gap-2 
-                      bg-white text-[#007BFF] px-5 py-2.5 rounded-full text-sm font-semibold 
+                      className="group relative flex items-center gap-2
+                      bg-gradient-to-r from-blue-600 to-blue-500 text-white
+                      px-5 py-2.5 rounded-full text-sm font-semibold
                       overflow-hidden transition-all duration-300
-                      hover:scale-[1.05] active:scale-[0.95]"
+                      hover:from-blue-500 hover:to-sky-500
+                      hover:scale-[1.05] active:scale-[0.95]
+                      shadow-lg shadow-blue-900/50"
                     >
                       {/* shine effect */}
-                      <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-100%] group-hover:translate-x-[100%]" />
+                      <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-transparent via-white/25 to-transparent translate-x-[-100%] group-hover:translate-x-[100%]" />
 
                       <span className="relative z-10">Get Started</span>
 

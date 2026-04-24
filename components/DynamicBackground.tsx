@@ -17,34 +17,36 @@ function AnimatedShapes() {
         new THREE.TetrahedronGeometry(1.2, 2),
       ];
 
+      // Refined dark-blue palette — richer, more varied blues
       const colors = [
-        "#1e3a8a", // dark blue
-        "#09099e", // deep blue
-        "#0f172a", // charcoal-black
-        "#1e40af", // medium dark blue
-        "#0c4a6e", // slate-blue
-        "#164e63", // teal-black
-        "#1f2937", // dark gray-black
+        "#1e3a8a", // blue-800
+        "#1d4ed8", // blue-700
+        "#2563eb", // blue-600
+        "#0ea5e9", // sky-500
+        "#0c4a6e", // sky-900
+        "#1e40af", // blue-700 alt
+        "#164e63", // cyan-900
+        "#075985", // sky-800
       ];
 
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 10; i++) {
         const geometry = geometries[i % geometries.length];
         const color = new THREE.Color(colors[i % colors.length]);
 
         const material = new THREE.MeshPhongMaterial({
           color,
           emissive: color,
-          emissiveIntensity: 0.1,
+          emissiveIntensity: 0.15,
           wireframe: i % 4 === 0,
           transparent: true,
-          opacity: 0.4,
+          opacity: 0.45,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(
-          (Math.random() - 0.5) * 15,
-          (Math.random() - 0.5) * 15,
-          (Math.random() - 0.5) * 15
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 16
         );
 
         mesh.rotation.set(
@@ -78,10 +80,9 @@ function AnimatedShapes() {
       mesh.rotation.y += mesh.userData.rotY;
       mesh.rotation.z += mesh.userData.rotZ;
 
-      // Wrap around boundaries
-      if (Math.abs(mesh.position.x) > 10) mesh.userData.speedX *= -1;
-      if (Math.abs(mesh.position.y) > 10) mesh.userData.speedY *= -1;
-      if (Math.abs(mesh.position.z) > 10) mesh.userData.speedZ *= -1;
+      if (Math.abs(mesh.position.x) > 11) mesh.userData.speedX *= -1;
+      if (Math.abs(mesh.position.y) > 11) mesh.userData.speedY *= -1;
+      if (Math.abs(mesh.position.z) > 11) mesh.userData.speedZ *= -1;
     });
   });
 
@@ -91,21 +92,11 @@ function AnimatedShapes() {
 function Particles() {
   const ref = useRef<THREE.Points>(null);
 
-  useMemo(() => {
-    const positions = new Float32Array(1500 * 3);
-    for (let i = 0; i < 1500; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
-    }
-    return positions;
-  }, []);
-
   const pointsGeometry = useMemo(() => {
     const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(1500 * 3);
-    for (let i = 0; i < 1500; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
+    const positions = new Float32Array(1800 * 3);
+    for (let i = 0; i < 1800; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * 30;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
     }
@@ -123,10 +114,10 @@ function Particles() {
   return (
     <points ref={ref} geometry={pointsGeometry}>
       <pointsMaterial
-        size={0.04}
-        color="#1e40af"
+        size={0.045}
+        color="#3b82f6"
         transparent
-        opacity={0.3}
+        opacity={0.35}
         sizeAttenuation
         depthWrite={false}
       />
@@ -136,12 +127,18 @@ function Particles() {
 
 export default function DynamicBackground() {
   return (
-    <div className="fixed inset-0 -z-10 bg-linear-to-br from-[#07111f] via-[#0b1d35] to-[#123465]">
+    <div
+      className="fixed inset-0 -z-10"
+      style={{
+        background:
+          "linear-gradient(135deg, #060E1F 0%, #081427 40%, #0D1F40 70%, #0a1628 100%)",
+      }}
+    >
       <Canvas camera={{ position: [0, 0, 25] }}>
-        <ambientLight intensity={0.28} />
-        <pointLight position={[10, 10, 10]} intensity={0.24} color="#60a5fa" />
-        <pointLight position={[-10, -10, 10]} intensity={0.18} color="#38bdf8" />
-        <pointLight position={[0, 0, -15]} intensity={0.14} color="#93c5fd" />
+        <ambientLight intensity={0.22} />
+        <pointLight position={[10, 10, 10]}   intensity={0.30} color="#60a5fa" />
+        <pointLight position={[-10, -10, 10]} intensity={0.22} color="#38bdf8" />
+        <pointLight position={[0, 0, -15]}    intensity={0.16} color="#93c5fd" />
 
         <AnimatedShapes />
         <Particles />
